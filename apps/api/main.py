@@ -1,9 +1,14 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Sequence, Union
+import logging
+import os
+import time
+import uuid
+from typing import Annotated, Any, Dict, List, Optional, Sequence, Union
 from urllib.parse import urlparse
 
-from fastapi import FastAPI, HTTPException, Query, Response
+import structlog
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from qdrant_client import QdrantClient
 from qdrant_client.models import FieldCondition, Filter, MatchAny, MatchValue
@@ -13,6 +18,18 @@ from apps.api.embeddings_local import embed_query
 from apps.common.compliance import apply_display_policy
 from models.config import settings
 
+structlog.configure(
+    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.add_log_level,
+        structlog.processors.JSONRenderer(),
+    ],
+)
+log = structlog.get_logger()
+
+_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",") if o.strip()]
+
 app = FastAPI(
     title="Agentic Web3 RAG API",
     version="0.1.0",
@@ -21,13 +38,34 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_credentials=False,   # must be False when allow_origins includes "*"
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept", "Authorization"],
 )
 
 _client = QdrantClient(url=settings.qdrant_url, api_key=settings.qdrant_api_key)
+
+_MAX_K = 20
+_MAX_Q_CHARS = 2_000
+
+
+@app.middleware("http")
+async def _request_logging(request: Request, call_next):
+    req_id = str(uuid.uuid4())
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = round((time.perf_counter() - start) * 1000, 1)
+    log.info(
+        "request",
+        req_id=req_id,
+        method=request.method,
+        path=request.url.path,
+        status=response.status_code,
+        ms=elapsed_ms,
+    )
+    response.headers["X-Request-Id"] = req_id
+    return response
 
 
 def _build_project_filter(project: Optional[Union[str, Sequence[str]]]) -> Optional[Filter]:
@@ -115,6 +153,23 @@ def _vector_search(
     return out
 
 
+def _validated_k(k: int) -> int:
+    if k < 1:
+        raise HTTPException(status_code=422, detail="k must be >= 1")
+    if k > _MAX_K:
+        raise HTTPException(status_code=422, detail=f"k must be <= {_MAX_K}")
+    return k
+
+
+def _validated_q(q: str) -> str:
+    q = q.strip()
+    if not q:
+        raise HTTPException(status_code=422, detail="q must not be empty")
+    if len(q) > _MAX_Q_CHARS:
+        raise HTTPException(status_code=422, detail=f"q must be <= {_MAX_Q_CHARS} characters")
+    return q
+
+
 @app.get("/", include_in_schema=False)
 def root():
     return {"ok": True, "message": "Agentic Web3 RAG API — see /docs"}
@@ -127,12 +182,14 @@ def health():
 
 @app.get("/search")
 def search_api(
-    q: str,
+    q: Annotated[str, Query(max_length=_MAX_Q_CHARS)],
     k: int = 5,
     project: Optional[List[str]] = Query(None),
     offset: int = 0,
     collection: Optional[str] = None,
 ):
+    q = _validated_q(q)
+    k = _validated_k(k)
     raw = _vector_search(q=q, k=k, project=project, offset=offset, collection=collection)
     safe = [apply_display_policy(r) for r in raw]
     safe = _dedupe(safe)
@@ -142,10 +199,8 @@ def search_api(
 
 @app.post("/assist")
 def assist_api(body: dict, response: Response):
-    q = (body.get("q") or "").strip()
-    if not q:
-        raise HTTPException(status_code=422, detail="Field 'q' is required.")
-    k = int(body.get("k", 5))
+    q = _validated_q(body.get("q") or "")
+    k = _validated_k(int(body.get("k", 5)))
     project = body.get("project")
     offset = int(body.get("offset", 0))
     collection = body.get("collection")
@@ -161,7 +216,6 @@ def assist_api(body: dict, response: Response):
 
 
 def _use_openai() -> bool:
-    import os
     return os.getenv("ASSIST_USE_OPENAI", "false").lower() in ("1", "true", "yes")
 
 

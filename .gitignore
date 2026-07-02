@@ -32,6 +32,7 @@ node_modules/
 .next/
 out/
 .env.local
+!.env.local.example
 
 # OS
 .DS_Store

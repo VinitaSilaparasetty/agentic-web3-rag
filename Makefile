@@ -1,15 +1,13 @@
-# File: Makefile
-# Why: One-liners reduce setup friction during opt-in pilot.
-.PHONY: dev up down api ingest eval test fmt
+.PHONY: dev up down api ingest eval test fmt lint
 
 dev:
-	python -m venv .venv && . .venv/bin/activate && pip install -e .
+	python -m venv .venv && . .venv/bin/activate && pip install -e ".[dev]"
 
 up:
-	docker-compose up -d --build
+	docker compose up -d qdrant
 
 down:
-	docker-compose down -v
+	docker compose down -v
 
 api:
 	. .venv/bin/activate && uvicorn apps.api.main:app --host $${API_HOST:-0.0.0.0} --port $${API_PORT:-8080} --reload
@@ -22,3 +20,12 @@ eval:
 
 test:
 	. .venv/bin/activate && pytest
+
+lint:
+	. .venv/bin/activate && ruff check .
+
+fmt:
+	. .venv/bin/activate && ruff format .
+
+docker-build:
+	docker build -f infra/docker/api/Dockerfile -t web3rag-api .
