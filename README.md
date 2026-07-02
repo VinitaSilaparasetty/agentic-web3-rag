@@ -264,11 +264,25 @@ All settings are read from environment variables (or `.env`). Copy `.env.example
 
 ---
 
+## 🙋 Web3 Maintainers — Opt In
+
+If you maintain Web3 documentation and want it indexed, click the button below. It takes 2 minutes and you can revoke at any time.
+
+<div align="center">
+
+[![Opt in to indexing](https://img.shields.io/badge/Opt%20In%20to%20Indexing-%E2%9C%85%20Submit%20Consent-brightgreen?style=for-the-badge&logo=github)](https://github.com/VinitaSilaparasetty/agentic-web3-rag/issues/new?template=consent_to_index.md&title=Consent+to+Index%3A+%5Byour-project-name%5D)
+
+</div>
+
+By submitting the form you agree to the [Consent to Index terms](CONSENT.md). Your GitHub account identity and submission timestamp are recorded as the consent record. You can revoke at any time by commenting "REVOKE" on your issue or emailing info@aevoxis.de — all indexed content is removed within 48 hours.
+
+---
+
 ## 📋 Adding Your Own Sources
 
 ### 1. Get consent from the doc maintainer
 
-Raise an issue or PR on their repo asking to be indexed. Save the link as proof.
+Ask the maintainer to submit the opt-in form above, or raise an issue on their repo pointing them to it. Save the link to their consent issue as proof.
 
 ### 2. Add the domain to `data/consents.yaml`
 
