@@ -1,13 +1,15 @@
-sources:
-- kind: website
-  url: https://ethereum.org/en/developers/docs/apis/json-rpc/
-  project: ethereum
-  id: ethereum-org-json-rpc
-  license: CC-BY-4.0
-  consent_proof: "https://ethereum.org/en/contributing/"
+# Source list — only add URLs after consent is recorded in consents.yaml.
+#
+# Each entry must have a consent_proof pointing to the maintainer's
+# consent issue on GitHub before the ingest pipeline will process it.
+#
+# Format:
+#
+# sources:
+#   - kind: website
+#     id: example-docs
+#     project: example
+#     url: https://docs.example.com/
+#     consent_proof: "https://github.com/VinitaSilaparasetty/agentic-web3-rag/issues/1"
 
-- kind: website
-  url: https://geth.ethereum.org/docs/interacting-with-geth/rpc
-  project: geth
-  id: geth-ethereum-org-rpc
-  consent_proof: "https://github.com/ethereum/go-ethereum"
+sources: []
