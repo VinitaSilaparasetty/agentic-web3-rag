@@ -1,0 +1,17 @@
+consents:
+  - status: approved
+    domain: ethereum.org
+    project: ethereum
+    proof: "https://ethereum.org/en/contributing/"
+    scope:
+      include_paths:
+        - /en/developers/docs/
+      exclude_paths: []
+
+  - status: approved
+    domain: geth.ethereum.org
+    project: geth
+    proof: "https://github.com/ethereum/go-ethereum"
+    scope:
+      include_paths: []
+      exclude_paths: []

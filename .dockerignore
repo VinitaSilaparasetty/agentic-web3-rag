@@ -1,0 +1,11 @@
+.venv
+__pycache__
+*.pyc
+.git
+.gitignore
+data/
+docs/
+tests/
+scripts/
+infra/helm/
+infra/terraform/

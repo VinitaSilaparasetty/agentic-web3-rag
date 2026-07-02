@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-web3-rag"
+version = "0.1.0"
+description = "Agentic RAG over consent-gated Web3 documentation — search and answer developer questions from Ethereum, Solidity, and ecosystem docs."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [
+  {name = "Web3 RAG Contributors"},
+]
+keywords = [
+  "web3", "ethereum", "rag", "llm", "vector-search",
+  "blockchain", "documentation", "qdrant", "fastapi",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+  "fastapi>=0.112",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.7",
+  "pydantic-settings>=2.5",
+  "qdrant-client>=1.9",
+  "sentence-transformers>=3.0",
+  "fastembed>=0.3",
+  "trafilatura>=1.10",
+  "PyYAML>=6.0.2",
+  "requests>=2.31",
+  "python-jose[cryptography]>=3.3",
+  "tenacity>=9.0.0",
+  "structlog>=24.1.0",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0"]
+dev = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "httpx>=0.27",
+]
+
+[project.urls]
+Homepage = "https://github.com/web3-rag/agentic-web3-rag"
+Repository = "https://github.com/web3-rag/agentic-web3-rag"
+Documentation = "https://github.com/web3-rag/agentic-web3-rag#readme"
+"Bug Tracker" = "https://github.com/web3-rag/agentic-web3-rag/issues"
+
+[project.scripts]
+web3rag-api = "apps.api.main:main"
+web3rag-ingest = "pipelines.ingest_entry:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["apps*", "agents*", "models*", "policies*", "pipelines*", "tools*"]
+exclude = ["tests*", "docs*", "infra*", "data*", "scripts*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,24 @@
+- domain: ethereum.org
+  allowed: true
+  license: "CC BY 4.0"
+  cache_policy: "snippet"         # link-only | snippet | fulltext
+  snippet_chars: 320
+  attribution: "© Ethereum.org, CC BY 4.0 — link to source"
+  robots_respect: true
+  allow_refresh_hours: 24
+
+- domain: geth.ethereum.org
+  allowed: true
+  license: "All rights reserved / site ToS"
+  cache_policy: "link-only"
+  attribution: "All rights reserved — link to source"
+  robots_respect: true
+  allow_refresh_hours: 24
+
+- domain: yourproject.dev
+  allowed: true
+  license: "MIT (docs)"
+  cache_policy: "fulltext"
+  attribution: "© Your Project, MIT"
+  robots_respect: true
+  allow_refresh_hours: 24
