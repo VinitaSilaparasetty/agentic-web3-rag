@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Commercial licensing
+    url: mailto:info@aevoxis.de
+    about: For commercial use, enterprise deployment, or white-label licensing enquiries.
+  - name: Consent / takedown request
+    url: mailto:info@aevoxis.de
+    about: To request removal of your documentation from the index — see LEGAL.md.
