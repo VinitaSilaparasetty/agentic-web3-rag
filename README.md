@@ -33,22 +33,6 @@ Ask natural-language questions about Ethereum, Solidity, Geth, and the broader W
 
 ---
 
-## 📸 Screenshots
-
-### Web UI — Search
-![Search UI](docs/screenshots/search.png)
-> Enter any Web3 question and get ranked results with source links and snippets.
-
-### Web UI — Assist Answer
-![Assist answer](docs/screenshots/assist.png)
-> The `/assist` endpoint returns a structured answer with code examples and references.
-
-### API Docs
-![OpenAPI docs](docs/screenshots/api-docs.png)
-> Interactive API docs available at `http://localhost:8080/docs`.
-
-> **Note:** Add your own screenshots to `docs/screenshots/` after running the app locally.
-
 ---
 
 ## 🏗 Architecture
