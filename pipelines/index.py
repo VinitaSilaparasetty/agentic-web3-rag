@@ -138,6 +138,7 @@ def main() -> None:
                 "project": ch.get("project"),
                 "url": ch.get("url"),
                 "source_id": ch.get("source_id"),
+                "display_policy": ch.get("display_policy", "link-only"),
                 "cid": ch.get("cid"),
                 "commit": ch.get("commit"),
             })

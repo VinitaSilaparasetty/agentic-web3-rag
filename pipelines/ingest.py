@@ -42,17 +42,18 @@ def _load_yaml(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
-def _is_allowed(item: SourceItem) -> bool:
-    """Deny-by-default consent gate using ConsentRegistry."""
+def _consent_check(item: SourceItem) -> tuple[bool, str]:
+    """Return (allowed, display_policy) from the consent registry."""
     from urllib.parse import urlparse
     from policies.consent_registry import ConsentRegistry
     try:
         reg = ConsentRegistry(str(CONSENTS_FILE))
     except FileNotFoundError:
-        return False
+        return False, "link-only"
     parsed = urlparse(str(item.url))
     ok, _ = reg.is_allowed(parsed.netloc, parsed.path or "/")
-    return ok
+    policy = reg.display_policy_for(parsed.netloc) if ok else "link-only"
+    return ok, policy
 
 
 def fetch_http(url: str, ua: str) -> str:
@@ -74,11 +75,13 @@ def fetch_http(url: str, ua: str) -> str:
     return text
 
 
-def _write_markdown(item: SourceItem, body_text: str) -> Path:
+def _write_markdown(item: SourceItem, body_text: str, display_policy: str = "link-only") -> Path:
     """
     Persist normalized Markdown with front-matter metadata.
     Why:
     - Store provenance and consent proof for audit + future purges.
+    - display_policy is passed through to chunks and Qdrant payload so the
+      compliance layer can enforce it without a second registry lookup.
     """
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     out = PROCESSED_DIR / f"{item.id}.md"
@@ -86,6 +89,7 @@ def _write_markdown(item: SourceItem, body_text: str) -> Path:
         "project": item.project,
         "source_url": str(item.url),
         "consent_proof": item.consent_proof or "",
+        "display_policy": display_policy,
         "ingested_at": int(time.time()),
         "user_agent": settings.user_agent,
         "policy_mode": settings.policy_mode,
@@ -104,11 +108,11 @@ def _write_markdown(item: SourceItem, body_text: str) -> Path:
 
 
 def _ingest_website(item: SourceItem) -> Path:
-    if not _is_allowed(item):
-        # Why-not: deny-by-default policy in Phase-1; we only ingest explicit opt-ins.
+    allowed, display_policy = _consent_check(item)
+    if not allowed:
         raise PermissionError(f"source not allowed by consent registry: {item.id} ({item.project})")
     text = fetch_http(str(item.url), settings.user_agent)
-    return _write_markdown(item, text)
+    return _write_markdown(item, text, display_policy=display_policy)
 
 
 def run_ingest(manifest: List[Dict]) -> List[Path]:

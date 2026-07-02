@@ -65,6 +65,8 @@ def main() -> None:
         url     = meta.get("source_url") or meta.get("url")
         source_id = fp.stem  # file name without suffix
 
+        display_policy = meta.get("display_policy", "link-only")
+
         for chunk in _paragraph_chunks(body):
             cid = _stable_id(source_id, chunk)
             rec = {
@@ -73,6 +75,7 @@ def main() -> None:
                 "project": project,
                 "url": url,
                 "source_id": source_id,
+                "display_policy": display_policy,
                 # optional passthroughs if present in front-matter
                 "cid": meta.get("cid"),
                 "commit": meta.get("commit"),

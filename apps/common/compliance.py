@@ -144,12 +144,20 @@ def policy_for_url(url: str) -> Policy:
 def apply_display_policy(rec: dict) -> dict:
     """Return a UI-safe view of a search/assist record based on its URL policy.
 
+    Resolution order:
+      1) display_policy field in the Qdrant payload (set at ingest time from consents.yaml)
+      2) URL-based policy lookup (per-domain overrides + GitHub API + default)
+
     - link-only: keep url + best-effort title; drop snippet/text; add note
     - snippet: keep url + title + trimmed snippet; drop full text
     - fulltext: keep everything including text
     """
     url = (rec or {}).get("url") or ""
-    pol = policy_for_url(url)
+    payload_policy = (rec or {}).get("display_policy")
+    if payload_policy in ("link-only", "snippet", "fulltext"):
+        pol = Policy(True, "consent-registry", payload_policy, DEFAULT_SNIPPET_CHARS)
+    else:
+        pol = policy_for_url(url)
     out = {
         "url": url,
         "title": rec.get("title"),

@@ -1,7 +1,7 @@
 # File: policies/consent_registry.py
 # Why: Treat consent as a first-class artifact; fail-closed if missing.
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, Any
 import yaml
 from pathlib import Path
@@ -15,6 +15,7 @@ class Consent:
     proof: str
     include_paths: list[str]
     exclude_paths: list[str]
+    display_policy: str = "link-only"  # link-only | snippet | fulltext
 
 
 class ConsentRegistry:
@@ -36,6 +37,7 @@ class ConsentRegistry:
                 proof=c["proof"],
                 include_paths=c.get("scope", {}).get("include_paths", []),
                 exclude_paths=c.get("scope", {}).get("exclude_paths", []),
+                display_policy=c.get("display_policy", "link-only"),
             )
 
     def is_allowed(self, domain: str, path: str) -> tuple[bool, str]:
@@ -43,12 +45,15 @@ class ConsentRegistry:
         if d not in self._items:
             return False, "domain_not_allowlisted"
         consent = self._items[d]
-        # We respect scope paths to avoid creeping beyond intended areas.
         ok_inc = (not consent.include_paths) or any(path.startswith(p) for p in consent.include_paths)
         ok_exc = all(not path.startswith(p) for p in consent.exclude_paths)
         if ok_inc and ok_exc:
             return True, consent.proof
         return False, "path_out_of_scope"
+
+    def display_policy_for(self, domain: str) -> str:
+        c = self._items.get(domain.lower())
+        return c.display_policy if c else "link-only"
 
     def evidence_for(self, domain: str) -> str | None:
         c = self._items.get(domain.lower())
