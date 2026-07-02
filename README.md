@@ -352,7 +352,7 @@ python -m pipelines.eval_retrieval
 
 ---
 
-## 📜 Consent & Governance
+## 📜 Consent, Governance & Compliance
 
 This project operates on a **deny-by-default** consent model:
 
@@ -361,6 +361,16 @@ This project operates on a **deny-by-default** consent model:
 - Display policy per domain is enforced at query time (`link-only` / `snippet` / `fulltext`)
 - Takedown requests are honoured within 48 hours — see [LEGAL.md](LEGAL.md)
 - Full policy details in [GOVERNANCE.md](GOVERNANCE.md)
+
+### EU compliance
+
+| Regulation | How it is addressed |
+|-----------|-------------------|
+| **GDPR** (2016/679) | [PRIVACY.md](PRIVACY.md) — privacy notice, data subject rights, retention policy, third-country transfer disclosure |
+| **EU AI Act** (2024/1689) Art. 50 | `/assist` responses carry `"ai_generated": true` and `X-AI-Generated: true` header; integrators must surface this to end users |
+| **DSM Copyright Directive** (2019/790) Art. 4 | Consent model is opt-**in** — exceeds the opt-out minimum; `robots.txt` + `X-Robots-Tag: noai` + TDM reservation headers respected |
+| **eIDAS** (910/2014) Art. 25 | GitHub issue consent = Simple Electronic Signature; legally admissible as evidence — see [CONSENT.md §9](CONSENT.md) |
+| **DSA** (2022/2065) | Micro-enterprise exemption applies; no algorithmic content ranking or advertising |
 
 ---
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Sequence, Union
 from urllib.parse import urlparse
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from qdrant_client import QdrantClient
 from qdrant_client.models import FieldCondition, Filter, MatchAny, MatchValue
@@ -141,7 +141,7 @@ def search_api(
 
 
 @app.post("/assist")
-def assist_api(body: dict):
+def assist_api(body: dict, response: Response):
     q = (body.get("q") or "").strip()
     if not q:
         raise HTTPException(status_code=422, detail="Field 'q' is required.")
@@ -154,7 +154,15 @@ def assist_api(body: dict):
     safe = _dedupe(safe)
     safe = [_enrich(d) for d in safe]
     answer = assist_answer(q, safe)
-    return {"query": q, "results": safe, "answer": answer}
+    # EU AI Act Art. 50 — disclose AI-generated content to callers
+    response.headers["X-AI-Generated"] = "true"
+    response.headers["X-AI-Model"] = "openai/gpt-4o-mini" if _use_openai() else "rule-based"
+    return {"query": q, "results": safe, "answer": answer, "ai_generated": True}
+
+
+def _use_openai() -> bool:
+    import os
+    return os.getenv("ASSIST_USE_OPENAI", "false").lower() in ("1", "true", "yes")
 
 
 def main() -> None:

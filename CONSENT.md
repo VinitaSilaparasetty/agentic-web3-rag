@@ -92,7 +92,27 @@ Aevoxis Solutions may update these terms by publishing a new version of this fil
 
 ---
 
-## 9. Contact
+## 9. Electronic signature and legal validity
+
+By submitting a "Consent to Index" GitHub issue with the required checkboxes ticked, you are providing a **Simple Electronic Signature (SES)** within the meaning of Article 3(10) of Regulation (EU) No 910/2014 (eIDAS).
+
+Pursuant to Article 25(1) of eIDAS, this signature shall not be denied legal effect or admissibility as evidence in legal proceedings solely on the grounds that it is in electronic form. Your GitHub account identity, the issue timestamp, the content of your submission, and GitHub's audit trail together constitute the evidentiary record of your consent.
+
+If you are acting on behalf of an organisation, you confirm you have authority to bind that organisation (as stated in the Authority Confirmation section of the consent form).
+
+---
+
+## 10. Data retention
+
+The consent issue record on GitHub is retained indefinitely as a public transparency log, even after revocation. This is necessary for legal accountability and to document the provenance of historical indexing decisions.
+
+All content derived from your documentation (embeddings, chunked text, metadata) is deleted within **48 hours** of revocation as set out in §5.
+
+For full GDPR privacy information, including your data subject rights and the identity of the data controller, see [PRIVACY.md](PRIVACY.md).
+
+---
+
+## 11. Contact
 
 For questions about these terms, consent scope, or takedown requests:
 
