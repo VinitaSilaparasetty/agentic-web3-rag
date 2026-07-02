@@ -15,4 +15,20 @@
 #         - /docs/
 #       exclude_paths: []
 
-consents: []
+consents:
+  # Self-owned product — Vinita Silaparasetty / Aevoxis Solutions is both
+  # the rights holder and the operator of this RAG system. No external
+  # consent issue required; the LICENSE file is the proof of ownership.
+  - status: approved
+    domain: github.com
+    project: pr-automation-agent
+    license: AGPL-3.0
+    display_policy: fulltext
+    proof: "https://github.com/VinitaSilaparasetty/pr-automation-agent/blob/main/LICENSE"
+    scope:
+      include_paths:
+        - /VinitaSilaparasetty/pr-automation-agent
+      exclude_paths:
+        - /VinitaSilaparasetty/pr-automation-agent/issues
+        - /VinitaSilaparasetty/pr-automation-agent/pulls
+        - /VinitaSilaparasetty/pr-automation-agent/actions

@@ -12,4 +12,18 @@
 #     url: https://docs.example.com/
 #     consent_proof: "https://github.com/VinitaSilaparasetty/agentic-web3-rag/issues/1"
 
-sources: []
+sources:
+  # pr-automation-agent — self-owned; Vinita Silaparasetty / Aevoxis Solutions
+  - kind: website
+    id: pr-automation-agent-readme
+    project: pr-automation-agent
+    url: https://github.com/VinitaSilaparasetty/pr-automation-agent
+    license: AGPL-3.0
+    consent_proof: "https://github.com/VinitaSilaparasetty/pr-automation-agent/blob/main/LICENSE"
+
+  - kind: website
+    id: pr-automation-agent-changelog
+    project: pr-automation-agent
+    url: https://github.com/VinitaSilaparasetty/pr-automation-agent/blob/main/CHANGELOG.md
+    license: AGPL-3.0
+    consent_proof: "https://github.com/VinitaSilaparasetty/pr-automation-agent/blob/main/LICENSE"
