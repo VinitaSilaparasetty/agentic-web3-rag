@@ -33,6 +33,21 @@ Ask natural-language questions about Ethereum, Solidity, Geth, and the broader W
 
 ---
 
+## 📸 Screenshots
+
+<div align="center">
+
+**Web UI — search interface**
+![Web3 Docs Search UI](docs/screenshots/web-ui.png)
+
+**Live search result for `eth_getBalance`**
+![Search result](docs/screenshots/search-result.png)
+
+**OpenAPI interactive docs (`/docs`)**
+![API docs](docs/screenshots/api-docs.png)
+
+</div>
+
 ---
 
 ## 🏗 Architecture
