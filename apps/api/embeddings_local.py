@@ -1,11 +1,15 @@
 from functools import lru_cache
-from sentence_transformers import SentenceTransformer
+from typing import List
+
+MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
+
 
 @lru_cache(maxsize=1)
 def _model():
-    # Same model used by your pipelines.embed (dim=384)
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    from fastembed import TextEmbedding
+    return TextEmbedding(model_name=MODEL_ID)
 
-def embed_query(text: str):
-    # Normalized embedding for cosine similarity in Qdrant
-    return _model().encode([text], normalize_embeddings=True)[0].tolist()
+
+def embed_query(text: str) -> List[float]:
+    vectors = list(_model().embed([text]))
+    return [float(x) for x in vectors[0]]

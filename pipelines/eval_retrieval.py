@@ -5,11 +5,13 @@ from functools import lru_cache
 
 from models.config import settings
 
+MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
+
 
 @lru_cache(maxsize=1)
 def _model():
-    from sentence_transformers import SentenceTransformer
-    return SentenceTransformer(settings.embedding_model)
+    from fastembed import TextEmbedding
+    return TextEmbedding(model_name=MODEL_ID)
 
 
 @lru_cache(maxsize=1)
@@ -19,9 +21,7 @@ def _qdrant():
 
 
 def evaluate() -> dict:
-    from qdrant_client.http import models as qm
-
-    EMB = _model()
+    model = _model()
     Q = _qdrant()
 
     qs = [
@@ -30,14 +30,14 @@ def evaluate() -> dict:
     ]
     passed = 0
     for q in qs:
-        v = EMB.encode([q], normalize_embeddings=True)[0].tolist()
-        res = Q.search(
-            settings.qdrant_alias_active,
-            query_vector=v,
+        vectors = list(model.embed([q]))
+        v = [float(x) for x in vectors[0]]
+        res = Q.query_points(
+            collection_name=settings.qdrant_alias_active,
+            query=v,
             limit=5,
             with_vectors=False,
-            search_params=qm.SearchParams(hnsw_ef=128, exact=False),
-        )
+        ).points
         ok = any(
             "ERC-20" in (r.payload.get("text", "")) or "gas" in (r.payload.get("text", ""))
             for r in res

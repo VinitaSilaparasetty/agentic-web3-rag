@@ -1,9 +1,13 @@
 sources:
-- type: website
+- kind: website
   url: https://ethereum.org/en/developers/docs/apis/json-rpc/
   project: ethereum
   id: ethereum-org-json-rpc
-- type: website
+  license: CC-BY-4.0
+  consent_proof: "https://ethereum.org/en/contributing/"
+
+- kind: website
   url: https://geth.ethereum.org/docs/interacting-with-geth/rpc
-  project: ethereum
+  project: geth
   id: geth-ethereum-org-rpc
+  consent_proof: "https://github.com/ethereum/go-ethereum"

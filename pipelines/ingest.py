@@ -136,7 +136,7 @@ def run_ingest(manifest: List[Dict]) -> List[Path]:
     for d in manifest:
         item = SourceItem(**d)
         lic = normalize(getattr(item, 'license', None))
-        if not license_ok(lic):
+        if lic is not None and not license_ok(lic):
             print(f"[license-skip] {item.id} license={lic!r} not allowed; skipping")
             continue
         if item.kind == "website":

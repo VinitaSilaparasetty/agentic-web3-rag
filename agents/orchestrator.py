@@ -6,15 +6,18 @@ from typing import Any, Dict, List
 from models.config import settings
 from tools.retrieval import search_dense
 
+MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
+
 
 @lru_cache(maxsize=1)
 def _model():
-    from sentence_transformers import SentenceTransformer
-    return SentenceTransformer(settings.embedding_model)
+    from fastembed import TextEmbedding
+    return TextEmbedding(model_name=MODEL_ID)
 
 
 async def run_agent(query: str, top_k: int = 5) -> Dict[str, Any]:
-    vec = _model().encode([query], normalize_embeddings=True)[0].tolist()
+    vectors = list(_model().embed([query]))
+    vec = [float(x) for x in vectors[0]]
     hits = search_dense(settings.qdrant_alias_active, vec, top_k=top_k)
     bullets: List[str] = []
     for h in hits:

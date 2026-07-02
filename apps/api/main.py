@@ -97,15 +97,15 @@ def _vector_search(
     query_vector = embed_query(q)
     payload_filter = _build_project_filter(project)
     coll = collection or settings.qdrant_alias_active
-    res = _client.search(
+    res = _client.query_points(
         collection_name=coll,
-        query_vector=query_vector,
+        query=query_vector,
         limit=k,
         offset=offset,
         query_filter=payload_filter,
         with_payload=True,
         with_vectors=False,
-    )
+    ).points
     out: List[Dict[str, Any]] = []
     for p in res:
         pl = dict(p.payload or {})
