@@ -7,11 +7,11 @@ name = "agentic-web3-rag"
 version = "0.1.0"
 description = "Agentic RAG over consent-gated Web3 documentation — search and answer developer questions from Ethereum, Solidity, and ecosystem docs."
 readme = "README.md"
-license = "Apache-2.0"
+license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 authors = [
-  {name = "Web3 RAG Contributors"},
+  {name = "Vinita Silaparasetty", email = "info@aevoxis.de"},
 ]
 keywords = [
   "web3", "ethereum", "rag", "llm", "vector-search",
