@@ -24,8 +24,6 @@ Ask natural-language questions about Ethereum, Solidity, Geth, and the broader W
 
 ---
 
----
-
 ## ✨ Features
 
 - **Semantic search** over Web3 docs using `fastembed` + Qdrant (no GPU required)
@@ -190,7 +188,7 @@ Dense vector search over indexed docs.
 | Parameter    | Type     | Default | Description                              |
 |-------------|----------|---------|------------------------------------------|
 | `q`          | `string` | —       | **Required.** Natural-language query     |
-| `k`          | `int`    | `5`     | Number of results to return (max 10)     |
+| `k`          | `int`    | `5`     | Number of results to return (max 20)     |
 | `project`    | `string` | —       | Filter by project (e.g. `ethereum,geth`) |
 | `collection` | `string` | —       | Override Qdrant collection name          |
 | `offset`     | `int`    | `0`     | Pagination offset                        |
@@ -400,6 +398,24 @@ This project operates on a **deny-by-default** consent model:
 
 ---
 
+## 🔬 Research
+
+This repository includes an empirical study on AI consent signal adoption in open-source software:
+
+**[Machine-Readable TDM Opt-Out and AI Opt-In Signal Prevalence in Web3 Open-Source Repositories](experiments/ai_consent_audit/data/paper.md)**
+— Vinita Silaparasetty, Aevoxis Solutions, 2026
+
+Audits 200 Web3 OSS repos and 200 matched general-OSS repos for machine-readable signals
+under EU DSM Directive Art. 4 and EU AI Act Art. 53. Key findings:
+
+- Only **6.5%** of Web3 repos have deployed any DSM Art. 4 opt-out signal
+- **27%** have adopted `llms.txt` voluntary opt-in — significantly higher than general OSS (17.5%, p=0.03)
+- `tdm-reservation: 1` (the W3C-specified opt-out mechanism) has **0% adoption** in both populations
+
+Dataset and scanner code released under CC0 / AGPL-3.0 in [`experiments/ai_consent_audit/`](experiments/ai_consent_audit/).
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome. Please open an issue before submitting a large PR.
@@ -426,5 +442,5 @@ This software is licensed under **AGPL-3.0**. For commercial use, enterprise dep
 
 ## 📄 License
 
-Copyright © 2025 Vinita Silaparasetty, Aevoxis Solutions.
+Copyright © 2026 Vinita Silaparasetty, Aevoxis Solutions.
 Licensed under the [GNU Affero General Public License v3.0](LICENSE).
