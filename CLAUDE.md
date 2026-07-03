@@ -15,15 +15,16 @@ ingested requires explicit written consent from the maintainer — deny by defau
 
 ---
 
-## Current state (as of 2026-07-02)
+## Current state (as of 2026-07-03)
 
-- **Index is empty.** `data/consents.yaml` and `data/sources.yaml` both have empty lists.
-  No domains have been consented yet. The ingest pipeline will skip everything until a real
-  consent arrives via the GitHub issue template.
-- **Version:** 0.1.0 (Alpha) — not yet published to PyPI. The release workflow is wired
-  but the manual steps to publish haven't been triggered.
-- **CI:** GitHub Actions `ci.yml` runs on every push/PR (14 tests, Python 3.11 + 3.12,
-  Docker build check).
+- **Index seeded with 7 vectors** from 4 Aevoxis OSS repos (pr-automation-agent,
+  spec-drift_chronometer, agentic-web3-rag, multi-agent-audit-poc). `display_policy: fulltext`
+  for all (self-owned).
+- **Version:** 0.1.0 (Alpha) — **published on PyPI** (`pip install agentic-web3-rag`).
+- **CI:** GitHub Actions `ci.yml` runs on every push/PR (59 tests, Python 3.11 + 3.12,
+  Docker build check). Coverage threshold is 30% (actual ~34%). The Qdrant service
+  container health-check was moved from in-container curl (which failed — Qdrant image
+  has no curl) to a runner-side wait loop.
 
 ---
 
@@ -194,10 +195,86 @@ Three manual steps before triggering:
 
 ---
 
+## Experiment: EU AI Act Consent Signal Audit
+
+An empirical research study living in `experiments/ai_consent_audit/`. **Do not delete
+this directory** — it contains the full dataset and paper for a publishable study.
+
+### What it measures
+
+Prevalence of machine-readable TDM opt-out signals (DSM Directive Art. 4) and voluntary
+AI opt-in signals (llms.txt) across GitHub OSS repositories, in the context of EU AI Act
+Art. 53(1)(c) compliance obligations.
+
+### Status (as of 2026-07-03)
+
+- **Web3 cohort:** 200 repos — sampled, scanned, classified, analysed. Complete.
+- **General-OSS comparison cohort:** 200 repos — complete (finished 2026-07-03).
+- **Paper:** `experiments/ai_consent_audit/data/paper.md` — full results written.
+- **Next:** Full n=1,000 run + inter-rater reliability coding for journal submission.
+
+### Key findings
+
+| Finding | Value |
+|---------|-------|
+| Web3 DSM opt-out rate | 6.5% (95% CI [3.8%, 10.8%]) |
+| Web3 llms.txt opt-in rate | 27.0% |
+| General-OSS opt-in rate | 17.5% (p=0.03 vs. Web3) |
+| W3C tdm-reservation header adoption | **0%** in both populations |
+| Strongest signal predictor | Has dedicated docs site (logistic β=1.52) |
+
+### Running the experiment
+
+```bash
+# Always run from the project root — DATA_DIR is relative to cwd
+source .venv/bin/activate
+export $(grep -v '^#' .env | xargs)   # loads GITHUB_TOKEN — required for API rate limits
+
+# Pilot run (n=200, ~15 min)
+cd experiments/ai_consent_audit && python run_experiment.py --pilot
+
+# Resume comparison cohort scan only
+PYTHONPATH=experiments/ai_consent_audit python -c "
+import sys; sys.path.insert(0, 'experiments/ai_consent_audit')
+from comparison_sampler import scan, classify; scan(); classify()
+"
+
+# Re-run analysis + figures only
+PYTHONPATH=experiments/ai_consent_audit python -c "
+import sys; sys.path.insert(0, 'experiments/ai_consent_audit')
+import analysis; analysis.run()
+"
+```
+
+**Critical:** Run all scripts from the **project root** (`/path/to/agentic-web3-rag`),
+not from inside `experiments/ai_consent_audit/`. `DATA_DIR = "experiments/ai_consent_audit/data"`
+is a relative path — running from the wrong directory creates a nested duplicate data
+directory at `experiments/ai_consent_audit/experiments/ai_consent_audit/data/` and
+writes results there instead of the canonical location.
+
+### Experiment file map
+
+| File | Purpose |
+|------|---------|
+| `experiments/ai_consent_audit/config.py` | All parameters — sample sizes, keywords, paths, delays |
+| `experiments/ai_consent_audit/github_sampler.py` | Phase 1 — sample Web3 repos from GitHub API |
+| `experiments/ai_consent_audit/signal_scanner.py` | Phase 2 — fetch robots.txt, llms.txt, headers, README/LICENSE per repo |
+| `experiments/ai_consent_audit/classifier.py` | Phase 3 — classify each repo as OPT_IN / OPT_OUT / AMBIGUOUS / NONE |
+| `experiments/ai_consent_audit/analysis.py` | Phase 4 — Wilson CIs, logistic regression, figures |
+| `experiments/ai_consent_audit/comparison_sampler.py` | General-OSS comparison cohort (same phases, different topics) |
+| `experiments/ai_consent_audit/data/paper.md` | Full paper (Pandoc Markdown + BibTeX) |
+| `experiments/ai_consent_audit/data/references.bib` | Bibliography |
+| `experiments/ai_consent_audit/data/figures/` | PNG figures (fig1–fig4) |
+| `experiments/ai_consent_audit/data/classified.csv` | Web3 cohort — one row per repo with class label |
+| `experiments/ai_consent_audit/data/comparison_classified.csv` | General-OSS cohort — same schema |
+
+---
+
 ## What's NOT done yet (next session priorities)
 
 - [ ] DPA registration with German supervisory authority (non-code, must do before go-live)
 - [ ] Set `CORS_ORIGINS` to actual frontend domain in production `.env`
 - [ ] `/metrics` Prometheus endpoint (optional, needed for production observability)
-- [ ] Increase test coverage above 40% baseline (currently thin on pipeline and compliance code)
-- [ ] Publish v0.1.0 to PyPI (three manual steps above)
+- [ ] Increase test coverage toward 40%+ (add integration tests for pipeline code with live Qdrant)
+- [ ] Invite external Web3 maintainers to opt in via the README consent button
+- [ ] Experiment: full n=1,000 Web3 run + IRR coding for journal submission
