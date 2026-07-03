@@ -268,6 +268,35 @@ writes results there instead of the canonical location.
 | `experiments/ai_consent_audit/data/classified.csv` | Web3 cohort — one row per repo with class label |
 | `experiments/ai_consent_audit/data/comparison_classified.csv` | General-OSS cohort — same schema |
 
+### Reproducibility
+
+The experiment has two tiers of reproducibility:
+
+**Fully reproducible (deterministic from committed data):**
+Phases 3 and 4 — classifier and analysis — read only the committed JSONL/CSV files
+and produce identical outputs on any machine:
+```bash
+PYTHONPATH=experiments/ai_consent_audit python -c "
+import sys; sys.path.insert(0, 'experiments/ai_consent_audit')
+import classifier, analysis
+classifier.run('experiments/ai_consent_audit/data/signals_raw.jsonl',
+               'experiments/ai_consent_audit/data/classified.csv')
+classifier.run('experiments/ai_consent_audit/data/comparison_signals_raw.jsonl',
+               'experiments/ai_consent_audit/data/comparison_classified.csv')
+analysis.run()
+"
+```
+
+**Snapshot, not exactly reproducible:**
+Phases 1 and 2 — sampling and scanning — are point-in-time:
+- **Sampling** queries GitHub Search API sorted by stars, which shifts daily. A fresh
+  run will return a different repo set than the committed `repos_raw.jsonl`.
+- **Scanning** hits live URLs; robots.txt / llms.txt content changes over time.
+
+The committed raw data files (`*_raw.jsonl`, `*_signals_raw.jsonl`) are the authoritative
+snapshot (collected 2026-07-02/03). The paper's reported numbers derive from these files.
+Anyone can verify the numbers by re-running phases 3–4 against the committed data.
+
 ---
 
 ## What's NOT done yet (next session priorities)

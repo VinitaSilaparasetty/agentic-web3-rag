@@ -206,7 +206,30 @@ address TDM signal infrastructure.
 
 # 3. Methodology
 
-## 3.1 Pre-Registration
+## 3.1 Reproducibility
+
+This study distinguishes two tiers of reproducibility:
+
+**Tier 1 — fully deterministic (from committed data).** Phases 3 and 4 of the
+pipeline — classification and statistical analysis — are rule-based and
+deterministic. Anyone with the committed raw data files can re-run them and obtain
+identical outputs. The raw signal data (`signals_raw.jsonl`,
+`comparison_signals_raw.jsonl`) and sampling lists (`repos_raw.jsonl`,
+`comparison_repos_raw.jsonl`) are committed to the public repository under CC0 at
+<https://github.com/VinitaSilaparasetty/agentic-web3-rag/tree/main/experiments/ai_consent_audit/data>.
+All reported numbers in this paper are derivable from these files by running
+`classifier.py` then `analysis.py` with no external dependencies beyond Python 3.11+
+and optional `scikit-learn`/`matplotlib`.
+
+**Tier 2 — point-in-time snapshot (phases 1–2).** The sampling phase queries the
+GitHub Search API ranked by stars, which changes daily as repositories gain or lose
+popularity. The scanning phase fetches live URLs; robots.txt, llms.txt, and HTTP
+header values change over time. A fresh run of phases 1–2 will yield a different
+repository set and potentially different signal values than the committed dataset.
+The committed files are the authoritative snapshot for this paper (Web3 cohort
+collected 2026-07-02; comparison cohort completed 2026-07-03).
+
+## 3.2 Pre-Registration
 
 Three confirmatory hypotheses were pre-registered on the Open Science Framework prior
 to any data collection (OSF: [INSERT DOI AFTER REGISTRATION]):
@@ -223,7 +246,7 @@ cohorts of repositories created after August 2024 (EU AI Act entry into force da
 All other analyses — including the opt-in (llms.txt) findings and comparison population
 — are designated exploratory and are clearly labelled as such throughout.
 
-## 3.2 Population and Sampling
+## 3.3 Population and Sampling
 
 **Web3 population:** GitHub repositories satisfying: (a) at least one topic from
 {ethereum, web3, blockchain, solidity, defi, hardhat, foundry, wagmi, ethers, layer2};
@@ -245,7 +268,7 @@ for the pre-registered hypothesis: technically sophisticated, well-resourced mai
 are *more* likely to deploy signals, so low prevalence in this stratum is a lower bound
 on the broader population deficit.
 
-## 3.3 Signal Detection Instrument
+## 3.4 Signal Detection Instrument
 
 The scanner checks five signal categories per repository. Full code is at:
 <https://github.com/VinitaSilaparasetty/agentic-web3-rag/tree/main/experiments/ai_consent_audit>
@@ -274,7 +297,7 @@ heading and exceeds 100 characters. This multi-condition filter was added specif
 to address false positives from single-page applications that serve index HTML for
 all routes — a methodological improvement over a naive HTTP-200 check.
 
-## 3.4 Classification Schema
+## 3.5 Classification Schema
 
 Each repository is assigned to one of four mutually exclusive classes:
 
@@ -287,7 +310,7 @@ Each repository is assigned to one of four mutually exclusive classes:
 
 When OPT_IN and OPT_OUT signals both appear, the repository is classified AMBIGUOUS.
 
-## 3.5 Inter-Rater Reliability
+## 3.6 Inter-Rater Reliability
 
 The automated classifier is deterministic and rule-based; its validity depends on
 whether human coders applying the same classification rules would agree with its
@@ -297,7 +320,7 @@ the automated classifications, will independently classify a random 10% subsampl
 in the journal version. The pilot (n=200) reports automated classifications only;
 quantitative results should be interpreted with this limitation in mind.
 
-## 3.6 Statistical Analysis
+## 3.7 Statistical Analysis
 
 **Confirmatory (pre-registered):**
 - H1: Wilson score CI for OPT_OUT prevalence; confirmed if upper bound < 10%
