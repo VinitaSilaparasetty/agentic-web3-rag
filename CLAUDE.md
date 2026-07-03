@@ -211,7 +211,7 @@ Art. 53(1)(c) compliance obligations.
 - **Web3 cohort:** 200 repos — sampled, scanned, classified, analysed. Complete.
 - **General-OSS comparison cohort:** 200 repos — complete (finished 2026-07-03).
 - **Paper:** `experiments/ai_consent_audit/data/paper.md` — full results written.
-- **Pre-registration:** Submitted to OSF (AsPredicted template) on 2026-07-05, currently under review — DOI not yet assigned. Once DOI is received, update `data/paper.md` §3.2 by replacing `[INSERT OSF DOI AFTER REGISTRATION]` with the actual DOI, then commit and push.
+- **Pre-registration:** OSF DOI assigned — https://doi.org/10.17605/OSF.IO/ZHD5X — inserted into `data/paper.md` §3.2 and footer.
 - **Next:** Full n=1,000 run + inter-rater reliability coding for journal submission.
 
 ### Key findings
@@ -307,6 +307,6 @@ Anyone can verify the numbers by re-running phases 3–4 against the committed d
 - [ ] `/metrics` Prometheus endpoint (optional, needed for production observability)
 - [ ] Increase test coverage toward 40%+ (add integration tests for pipeline code with live Qdrant)
 - [ ] Invite external Web3 maintainers to opt in via the README consent button
-- [ ] Insert OSF pre-registration DOI into `experiments/ai_consent_audit/data/paper.md` §3.2 once assigned (submitted 2026-07-05, approval pending)
+- [x] Insert OSF pre-registration DOI into `experiments/ai_consent_audit/data/paper.md` — done (https://doi.org/10.17605/OSF.IO/ZHD5X)
 - [ ] Decide target journal (ICAIL 2027, AI & Society, or Computer Law & Security Review) and format paper accordingly
 - [ ] Experiment: full n=1,000 Web3 run + IRR coding for journal submission

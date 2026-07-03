@@ -232,7 +232,7 @@ collected 2026-07-02; comparison cohort completed 2026-07-03).
 ## 3.2 Pre-Registration
 
 Three confirmatory hypotheses were pre-registered on the Open Science Framework prior
-to any data collection (OSF: [INSERT DOI AFTER REGISTRATION]):
+to any data collection (OSF: https://doi.org/10.17605/OSF.IO/ZHD5X):
 
 **H1:** TDM opt-out signal prevalence (OPT_OUT class only, not including opt-in) is
 less than 10% of sampled Web3 repositories.
@@ -666,7 +666,7 @@ reported in the journal submission.
 
 ---
 
-**Pre-registration:** [INSERT OSF DOI]
+**Pre-registration:** https://doi.org/10.17605/OSF.IO/ZHD5X
 **Data and code:** <https://github.com/VinitaSilaparasetty/agentic-web3-rag/tree/main/experiments/ai_consent_audit>
 **Dataset licence:** CC0 · **Code licence:** AGPL-3.0
 **Conflict of interest:** The scanner is derived from agentic-web3-rag, a system
