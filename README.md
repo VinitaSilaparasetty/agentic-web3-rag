@@ -413,6 +413,7 @@ under EU DSM Directive Art. 4 and EU AI Act Art. 53. Key findings:
 - `tdm-reservation: 1` (the W3C-specified opt-out mechanism) has **0% adoption** in both populations
 
 Dataset and scanner code released under CC0 / AGPL-3.0 in [`experiments/ai_consent_audit/`](experiments/ai_consent_audit/).
+To reproduce the classification and analysis from committed data, see [`experiments/ai_consent_audit/README.md`](experiments/ai_consent_audit/README.md).
 
 ---
 
