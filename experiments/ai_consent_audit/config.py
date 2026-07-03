@@ -1,5 +1,7 @@
 """Experiment configuration — single source of truth for all parameters."""
 
+from pathlib import Path
+
 # ── Population definition ────────────────────────────────────────────────────
 SEARCH_TOPICS = [
     "ethereum", "web3", "blockchain", "solidity", "defi",
@@ -53,7 +55,8 @@ GITHUB_SEARCH_DELAY = 2.0      # seconds between search API calls (30/min limit)
 HTTP_DELAY = 0.5               # seconds between external HTTP calls
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-DATA_DIR = "experiments/ai_consent_audit/data"
+# Use __file__-relative path so scripts work from any working directory
+DATA_DIR = str(Path(__file__).parent / "data")
 REPOS_RAW = f"{DATA_DIR}/repos_raw.jsonl"
 SIGNALS_RAW = f"{DATA_DIR}/signals_raw.jsonl"
 CLASSIFIED = f"{DATA_DIR}/classified.csv"

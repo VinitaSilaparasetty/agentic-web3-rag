@@ -232,7 +232,7 @@ source .venv/bin/activate
 export $(grep -v '^#' .env | xargs)   # loads GITHUB_TOKEN — required for API rate limits
 
 # Pilot run (n=200, ~15 min)
-cd experiments/ai_consent_audit && python run_experiment.py --pilot
+PYTHONPATH=experiments/ai_consent_audit python experiments/ai_consent_audit/run_experiment.py --pilot
 
 # Resume comparison cohort scan only
 PYTHONPATH=experiments/ai_consent_audit python -c "
@@ -247,11 +247,8 @@ import analysis; analysis.run()
 "
 ```
 
-**Critical:** Run all scripts from the **project root** (`/path/to/agentic-web3-rag`),
-not from inside `experiments/ai_consent_audit/`. `DATA_DIR = "experiments/ai_consent_audit/data"`
-is a relative path — running from the wrong directory creates a nested duplicate data
-directory at `experiments/ai_consent_audit/experiments/ai_consent_audit/data/` and
-writes results there instead of the canonical location.
+**Note:** `config.py` uses `Path(__file__).parent / "data"` — scripts work from any
+working directory. The nested-data-directory bug (pre-2026-07-03) is fixed.
 
 ### Experiment file map
 
@@ -277,13 +274,16 @@ The experiment has two tiers of reproducibility:
 Phases 3 and 4 — classifier and analysis — read only the committed JSONL/CSV files
 and produce identical outputs on any machine:
 ```bash
+# Runs correctly from project root OR from inside experiments/ai_consent_audit/
+# (config.py uses __file__-relative paths — working directory doesn't matter)
 PYTHONPATH=experiments/ai_consent_audit python -c "
 import sys; sys.path.insert(0, 'experiments/ai_consent_audit')
 import classifier, analysis
-classifier.run('experiments/ai_consent_audit/data/signals_raw.jsonl',
-               'experiments/ai_consent_audit/data/classified.csv')
-classifier.run('experiments/ai_consent_audit/data/comparison_signals_raw.jsonl',
-               'experiments/ai_consent_audit/data/comparison_classified.csv')
+classifier.run()
+classifier.run(
+    signals_path='experiments/ai_consent_audit/data/comparison_signals_raw.jsonl',
+    out_path='experiments/ai_consent_audit/data/comparison_classified.csv',
+)
 analysis.run()
 "
 ```
