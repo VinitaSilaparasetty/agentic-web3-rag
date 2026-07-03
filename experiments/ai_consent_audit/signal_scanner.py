@@ -16,14 +16,12 @@ from __future__ import annotations
 import base64
 import json
 import os
-import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
-
 from config import (
     AI_CRAWLERS,
     DATA_DIR,
@@ -48,7 +46,7 @@ HTTP_HEADERS = {"User-Agent": USER_AGENT}
 
 # ── HTTP helpers ──────────────────────────────────────────────────────────────
 
-def _gh_get(url: str) -> Optional[Dict]:
+def _gh_get(url: str) -> dict | None:
     try:
         r = requests.get(url, headers=GH_HEADERS, timeout=REQUEST_TIMEOUT)
         if r.status_code == 403 and "rate limit" in r.text.lower():
@@ -65,7 +63,7 @@ def _gh_get(url: str) -> Optional[Dict]:
         return None
 
 
-def _http_get(url: str) -> Optional[requests.Response]:
+def _http_get(url: str) -> requests.Response | None:
     try:
         r = requests.get(
             url, headers=HTTP_HEADERS, timeout=REQUEST_TIMEOUT,
@@ -76,7 +74,7 @@ def _http_get(url: str) -> Optional[requests.Response]:
         return None
 
 
-def _decode_content(gh_file_obj: Optional[Dict]) -> str:
+def _decode_content(gh_file_obj: dict | None) -> str:
     if not gh_file_obj:
         return ""
     content = gh_file_obj.get("content", "")
@@ -91,7 +89,7 @@ def _decode_content(gh_file_obj: Optional[Dict]) -> str:
 
 # ── robots.txt parsing ────────────────────────────────────────────────────────
 
-def _parse_robots(text: str) -> Dict[str, Any]:
+def _parse_robots(text: str) -> dict[str, Any]:
     """
     Returns:
       blocks_all_crawlers: bool — Disallow: / for User-agent: *
@@ -148,7 +146,7 @@ def _parse_robots(text: str) -> Dict[str, Any]:
 
 # ── Keyword scanning ──────────────────────────────────────────────────────────
 
-def _scan_keywords(text: str) -> Dict[str, Any]:
+def _scan_keywords(text: str) -> dict[str, Any]:
     lower = text.lower()
     found_opt_out = [kw for kw in OPT_OUT_KEYWORDS if kw in lower]
     found_opt_in = [kw for kw in OPT_IN_KEYWORDS if kw in lower]
@@ -160,14 +158,12 @@ def _scan_keywords(text: str) -> Dict[str, Any]:
 
 # ── Per-repo scanning ─────────────────────────────────────────────────────────
 
-def scan_repo(repo: Dict[str, Any]) -> Dict[str, Any]:
+def scan_repo(repo: dict[str, Any]) -> dict[str, Any]:
     full_name = repo["full_name"]
-    owner = repo["owner"]
-    name = repo["name"]
     branch = repo.get("default_branch", "main")
     homepage = repo.get("homepage") or ""
 
-    result: Dict[str, Any] = {
+    result: dict[str, Any] = {
         "repo_id": repo["repo_id"],
         "full_name": full_name,
         "license_spdx": repo.get("license_spdx"),
@@ -284,7 +280,7 @@ def _already_scanned(path: str) -> set[int]:
 def run(repos_path: str = REPOS_RAW, out_path: str = SIGNALS_RAW) -> None:
     Path(DATA_DIR).mkdir(parents=True, exist_ok=True)
     repos = [
-        json.loads(l) for l in Path(repos_path).read_text().splitlines() if l.strip()
+        json.loads(line) for line in Path(repos_path).read_text().splitlines() if line.strip()
     ]
     scanned = _already_scanned(out_path)
     todo = [r for r in repos if r["repo_id"] not in scanned]

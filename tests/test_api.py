@@ -1,7 +1,6 @@
 """API endpoint tests using FastAPI's test client (no live Qdrant required)."""
 from unittest.mock import MagicMock, patch
 
-import pytest
 from fastapi.testclient import TestClient
 
 from apps.api.main import app

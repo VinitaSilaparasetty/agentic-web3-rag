@@ -1,7 +1,6 @@
 import os
 import urllib.parse
 from dataclasses import dataclass
-from typing import Optional
 
 import requests
 
@@ -58,7 +57,7 @@ def robots_allowed(url: str, ua: str = "web3-rag-bot") -> bool:
         return True
 
 
-def github_policy_for(url: str) -> Optional[Policy]:
+def github_policy_for(url: str) -> Policy | None:
     """Query GitHub's license API for the repo and return a Policy, or None."""
 
     def _infer_owner_repo(u: str):

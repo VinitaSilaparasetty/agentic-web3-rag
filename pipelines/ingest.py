@@ -7,19 +7,18 @@ Why:
 - Writes normalized Markdown with provenance to data/processed/*.md.
 """
 from __future__ import annotations
-from pathlib import Path
-from models.policy import license_ok, normalize
-from typing import List, Dict, Literal, Optional
-from dataclasses import dataclass
+
 import json
 import time
+from pathlib import Path
+from typing import Literal
 
 import requests
 import trafilatura
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 from models.config import settings
-
+from models.policy import license_ok, normalize
 
 DATA_DIR = Path("data")
 PROCESSED_DIR = DATA_DIR / "processed"
@@ -32,7 +31,7 @@ class SourceItem(BaseModel):
     id: str = Field(min_length=1)
     project: str = Field(min_length=1)
     url: HttpUrl
-    consent_proof: Optional[str] = None  # e.g., link to issue/PR/email artifact
+    consent_proof: str | None = None  # e.g., link to issue/PR/email artifact
 
 
 def _load_yaml(path: Path) -> dict:
@@ -45,6 +44,7 @@ def _load_yaml(path: Path) -> dict:
 def _consent_check(item: SourceItem) -> tuple[bool, str]:
     """Return (allowed, display_policy) from the consent registry."""
     from urllib.parse import urlparse
+
     from policies.consent_registry import ConsentRegistry
     try:
         reg = ConsentRegistry(str(CONSENTS_FILE))
@@ -115,7 +115,7 @@ def _ingest_website(item: SourceItem) -> Path:
     return _write_markdown(item, text, display_policy=display_policy)
 
 
-def run_ingest(manifest: List[Dict]) -> List[Path]:
+def run_ingest(manifest: list[dict]) -> list[Path]:
     """
     Execute Phase-1 ingest for a list of source dicts.
 
@@ -136,7 +136,7 @@ def run_ingest(manifest: List[Dict]) -> List[Path]:
     PermissionError
         If a source is not in the consent allowlist.
     """
-    written: List[Path] = []
+    written: list[Path] = []
     for d in manifest:
         item = SourceItem(**d)
         lic = normalize(getattr(item, 'license', None))
@@ -152,7 +152,7 @@ def run_ingest(manifest: List[Dict]) -> List[Path]:
     return written
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: list[str] | None = None) -> None:
     """
     Small CLI: `python -m pipelines.ingest --manifest-json <path>`
 

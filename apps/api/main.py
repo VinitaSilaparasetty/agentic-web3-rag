@@ -4,7 +4,8 @@ import logging
 import os
 import time
 import uuid
-from typing import Annotated, Any, Dict, List, Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Annotated, Any
 from urllib.parse import urlparse
 
 import structlog
@@ -68,11 +69,11 @@ async def _request_logging(request: Request, call_next):
     return response
 
 
-def _build_project_filter(project: Optional[Union[str, Sequence[str]]]) -> Optional[Filter]:
+def _build_project_filter(project: str | Sequence[str] | None) -> Filter | None:
     if not project:
         return None
     parts = [project] if isinstance(project, str) else list(project)
-    values: List[str] = []
+    values: list[str] = []
     for item in parts:
         for token in str(item or "").split(","):
             token = token.strip()
@@ -80,7 +81,7 @@ def _build_project_filter(project: Optional[Union[str, Sequence[str]]]) -> Optio
                 values.append(token)
     if not values:
         return None
-    should: List[FieldCondition] = [
+    should: list[FieldCondition] = [
         cond
         for v in values
         for cond in (
@@ -106,8 +107,8 @@ def _enrich(d: dict) -> dict:
     return d
 
 
-def _dedupe(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    seen: Dict[tuple, dict] = {}
+def _dedupe(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    seen: dict[tuple, dict] = {}
     for d in rows or []:
         u = d.get("url") or ""
         try:
@@ -128,10 +129,10 @@ def _dedupe(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 def _vector_search(
     q: str,
     k: int,
-    project: Optional[Sequence[str]],
+    project: Sequence[str] | None,
     offset: int = 0,
-    collection: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+    collection: str | None = None,
+) -> list[dict[str, Any]]:
     query_vector = embed_query(q)
     payload_filter = _build_project_filter(project)
     coll = collection or settings.qdrant_alias_active
@@ -144,7 +145,7 @@ def _vector_search(
         with_payload=True,
         with_vectors=False,
     ).points
-    out: List[Dict[str, Any]] = []
+    out: list[dict[str, Any]] = []
     for p in res:
         pl = dict(p.payload or {})
         pl["score"] = p.score
@@ -184,9 +185,9 @@ def health():
 def search_api(
     q: Annotated[str, Query(max_length=_MAX_Q_CHARS)],
     k: int = 5,
-    project: Optional[List[str]] = Query(None),
+    project: list[str] | None = Query(None),
     offset: int = 0,
-    collection: Optional[str] = None,
+    collection: str | None = None,
 ):
     q = _validated_q(q)
     k = _validated_k(k)

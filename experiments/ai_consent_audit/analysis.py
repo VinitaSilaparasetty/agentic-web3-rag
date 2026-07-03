@@ -16,12 +16,11 @@ import json
 import math
 import os
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from config import ANALYSIS_OUT, CLASSIFIED, FIGURES_DIR
-
 
 # ── Statistical helpers ───────────────────────────────────────────────────────
 
@@ -36,7 +35,7 @@ def wilson_ci(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
     return max(0.0, centre - margin), min(1.0, centre + margin)
 
 
-def chi2_goodness_of_fit(observed: List[int], expected_probs: List[float]) -> tuple[float, int]:
+def chi2_goodness_of_fit(observed: list[int], expected_probs: list[float]) -> tuple[float, int]:
     """Chi-square goodness of fit; returns (chi2_stat, degrees_of_freedom)."""
     n = sum(observed)
     chi2 = sum(
@@ -48,16 +47,16 @@ def chi2_goodness_of_fit(observed: List[int], expected_probs: List[float]) -> tu
     return chi2, df
 
 
-def logistic_coeff(X: List[List[float]], y: List[int]) -> Optional[Dict[str, float]]:
+def logistic_coeff(X: list[list[float]], y: list[int]) -> dict[str, float] | None:
     """
     Minimal gradient-descent logistic regression (no external deps).
     Returns dict of {feature_name: coeff} or None if sklearn available.
     Only used as fallback — prefer sklearn when available.
     """
     try:
+        import numpy as np
         from sklearn.linear_model import LogisticRegression
         from sklearn.preprocessing import StandardScaler
-        import numpy as np
 
         X_arr = np.array(X, dtype=float)
         y_arr = np.array(y, dtype=int)
@@ -77,7 +76,7 @@ def logistic_coeff(X: List[List[float]], y: List[int]) -> Optional[Dict[str, flo
 
 # ── Data loading ──────────────────────────────────────────────────────────────
 
-def load(path: str = CLASSIFIED) -> List[Dict[str, Any]]:
+def load(path: str = CLASSIFIED) -> list[dict[str, Any]]:
     rows = []
     with open(path, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
@@ -98,14 +97,14 @@ def load(path: str = CLASSIFIED) -> List[Dict[str, Any]]:
 
 # ── Analysis functions ────────────────────────────────────────────────────────
 
-def rq1_prevalence(rows: List[Dict]) -> Dict[str, Any]:
+def rq1_prevalence(rows: list[dict]) -> dict[str, Any]:
     """RQ1: What proportion emit any AI consent signal?"""
     n = len(rows)
     counts = Counter(r["class_label"] for r in rows)
     has_signal = counts["OPT_IN"] + counts["OPT_OUT"] + counts["AMBIGUOUS"]
     lo, hi = wilson_ci(has_signal, n)
 
-    result: Dict[str, Any] = {
+    result: dict[str, Any] = {
         "n_total": n,
         "n_opt_in": counts["OPT_IN"],
         "n_opt_out": counts["OPT_OUT"],
@@ -129,7 +128,7 @@ def rq1_prevalence(rows: List[Dict]) -> Dict[str, Any]:
     return result
 
 
-def rq2_direction(rows: List[Dict]) -> Dict[str, Any]:
+def rq2_direction(rows: list[dict]) -> dict[str, Any]:
     """RQ2: Signal direction breakdown among repos that have any signal."""
     signal_rows = [r for r in rows if r["class_label"] != "NONE"]
     n = len(signal_rows)
@@ -170,14 +169,14 @@ def rq2_direction(rows: List[Dict]) -> Dict[str, Any]:
     }
 
 
-def rq3_predictors(rows: List[Dict]) -> Dict[str, Any]:
+def rq3_predictors(rows: list[dict]) -> dict[str, Any]:
     """RQ3: What repo characteristics predict having any signal?"""
     # Logistic regression: DV = has_signal (binary)
     # IVs: log1p(stars), license_stratum (one-hot), age_years, has_homepage
     y = [1 if r["class_label"] != "NONE" else 0 for r in rows]
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
-    def age(r: Dict) -> float:
+    def age(r: dict) -> float:
         try:
             dt = datetime.fromisoformat(r["created_at"].replace("Z", "+00:00"))
             return (now - dt).days / 365.25
@@ -201,7 +200,7 @@ def rq3_predictors(rows: List[Dict]) -> Dict[str, Any]:
     lr_result = logistic_coeff(X, y)
 
     # Stratified prevalence by license
-    by_license: Dict[str, Any] = {}
+    by_license: dict[str, Any] = {}
     strata = ["permissive", "copyleft", "no_license", "other"]
     for st in strata:
         sub = [r for r in rows if r.get("license_stratum") == st]
@@ -241,7 +240,7 @@ def rq3_predictors(rows: List[Dict]) -> Dict[str, Any]:
     }
 
 
-def rq4_temporal(rows: List[Dict]) -> Dict[str, Any]:
+def rq4_temporal(rows: list[dict]) -> dict[str, Any]:
     """RQ4: Is signal adoption increasing around EU AI Act enforcement dates?"""
     # EU AI Act key dates
     key_dates = {
@@ -251,7 +250,7 @@ def rq4_temporal(rows: List[Dict]) -> Dict[str, Any]:
     }
 
     # Repo creation by quarter (how many new repos include signals at creation)
-    by_quarter: Dict[str, Dict[str, int]] = defaultdict(lambda: {"total": 0, "with_signal": 0})
+    by_quarter: dict[str, dict[str, int]] = defaultdict(lambda: {"total": 0, "with_signal": 0})
     for r in rows:
         try:
             dt = datetime.fromisoformat(r["created_at"].replace("Z", "+00:00"))
@@ -282,13 +281,11 @@ def rq4_temporal(rows: List[Dict]) -> Dict[str, Any]:
 
 # ── Figure generation ─────────────────────────────────────────────────────────
 
-def _try_figures(rows: List[Dict], results: Dict[str, Any]) -> None:
+def _try_figures(rows: list[dict], results: dict[str, Any]) -> None:
     try:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        import matplotlib.patches as mpatches
-        import numpy as np
     except ImportError:
         print("[analysis] matplotlib not available — skipping figures", flush=True)
         return
@@ -304,8 +301,8 @@ def _try_figures(rows: List[Dict], results: Dict[str, Any]) -> None:
     # ── Fig 1: Overall class distribution (pie) ───────────────────────────────
     r1 = results["rq1_prevalence"]
     labels = ["OPT_IN", "OPT_OUT", "AMBIGUOUS", "NONE"]
-    sizes = [r1[f"n_{l.lower()}"] for l in labels]
-    colors = [COLORS[l] for l in labels]
+    sizes = [r1[f"n_{lbl.lower()}"] for lbl in labels]
+    colors = [COLORS[lbl] for lbl in labels]
     fig, ax = plt.subplots(figsize=(7, 7))
     wedges, texts, autotexts = ax.pie(
         sizes, labels=None, colors=colors, autopct=lambda p: f"{p:.1f}%" if p > 1 else "",
@@ -314,7 +311,7 @@ def _try_figures(rows: List[Dict], results: Dict[str, Any]) -> None:
     for at in autotexts:
         at.set_fontsize(10)
     ax.legend(
-        wedges, [f"{l} (n={s})" for l, s in zip(labels, sizes)],
+        wedges, [f"{lbl} (n={s})" for lbl, s in zip(labels, sizes)],
         loc="lower center", bbox_to_anchor=(0.5, -0.08), ncol=2, fontsize=11,
     )
     ax.set_title(
@@ -324,7 +321,7 @@ def _try_figures(rows: List[Dict], results: Dict[str, Any]) -> None:
     plt.tight_layout()
     plt.savefig(f"{FIGURES_DIR}/fig1_prevalence.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print(f"  [figures] fig1_prevalence.png", flush=True)
+    print("  [figures] fig1_prevalence.png", flush=True)
 
     # ── Fig 2: Prevalence by license stratum (grouped bar) ────────────────────
     by_lic = results["rq3_predictors"]["prevalence_by_license_stratum"]
@@ -351,7 +348,7 @@ def _try_figures(rows: List[Dict], results: Dict[str, Any]) -> None:
         plt.tight_layout()
         plt.savefig(f"{FIGURES_DIR}/fig2_by_license.png", dpi=150, bbox_inches="tight")
         plt.close()
-        print(f"  [figures] fig2_by_license.png", flush=True)
+        print("  [figures] fig2_by_license.png", flush=True)
 
     # ── Fig 3: Temporal — quarterly signal adoption ──────────────────────────
     quarters = results["rq4_temporal"]["signal_prevalence_by_creation_quarter"]
@@ -392,7 +389,7 @@ def _try_figures(rows: List[Dict], results: Dict[str, Any]) -> None:
         plt.tight_layout()
         plt.savefig(f"{FIGURES_DIR}/fig3_temporal.png", dpi=150, bbox_inches="tight")
         plt.close()
-        print(f"  [figures] fig3_temporal.png", flush=True)
+        print("  [figures] fig3_temporal.png", flush=True)
 
     # ── Fig 4: Signal mechanism breakdown (horizontal bar) ────────────────────
     mech = results["rq2_direction"].get("signal_mechanism_counts", {})
@@ -410,19 +407,19 @@ def _try_figures(rows: List[Dict], results: Dict[str, Any]) -> None:
         plt.tight_layout()
         plt.savefig(f"{FIGURES_DIR}/fig4_signal_types.png", dpi=150, bbox_inches="tight")
         plt.close()
-        print(f"  [figures] fig4_signal_types.png", flush=True)
+        print("  [figures] fig4_signal_types.png", flush=True)
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def run(classified_path: str = CLASSIFIED, out_path: str = ANALYSIS_OUT) -> Dict[str, Any]:
+def run(classified_path: str = CLASSIFIED, out_path: str = ANALYSIS_OUT) -> dict[str, Any]:
     rows = load(classified_path)
     print(f"[analysis] loaded {len(rows)} classified repos", flush=True)
 
     results = {
         "metadata": {
             "n": len(rows),
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "source": classified_path,
         },
         "rq1_prevalence": rq1_prevalence(rows),

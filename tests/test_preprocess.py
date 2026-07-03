@@ -1,9 +1,7 @@
 """Tests for pipelines/preprocess.py — chunking + front-matter parsing."""
 import json
-import pytest
-from pathlib import Path
-from pipelines.preprocess import _parse_front_matter, _paragraph_chunks, _stable_id, main
 
+from pipelines.preprocess import _paragraph_chunks, _parse_front_matter, _stable_id, main
 
 # ── _parse_front_matter ───────────────────────────────────────────────────────
 
@@ -96,7 +94,7 @@ def test_main_writes_chunks_jsonl(tmp_path, monkeypatch):
     main()
 
     assert out_path.exists()
-    lines = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()]
+    lines = [json.loads(line) for line in out_path.read_text().splitlines() if line.strip()]
     assert len(lines) >= 1
     first = lines[0]
     assert first["project"] == "test-proj"
@@ -120,7 +118,7 @@ def test_main_defaults_display_policy_to_link_only(tmp_path, monkeypatch):
 
     main()
 
-    lines = [json.loads(l) for l in out_path.read_text().splitlines() if l.strip()]
+    lines = [json.loads(line) for line in out_path.read_text().splitlines() if line.strip()]
     assert lines[0]["display_policy"] == "link-only"
 
 

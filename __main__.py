@@ -1,7 +1,7 @@
 """End-to-end smoke runner: ingest → preprocess → embed → index → verify."""
 if __name__ == "__main__":
     from models.config import settings
-    from pipelines import ingest_entry, preprocess, embed, index
+    from pipelines import embed, index, ingest_entry, preprocess
 
     ingest_entry.main(["--sources", "data/sources.yaml"])
     preprocess.main()

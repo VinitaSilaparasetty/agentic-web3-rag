@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 from fastembed import TextEmbedding
 
@@ -10,8 +10,8 @@ CHUNKS_PATH = Path("data/processed/chunks.jsonl")
 OUT_PATH    = Path("data/vectors/embeddings.json")
 MODEL_ID    = "sentence-transformers/all-MiniLM-L6-v2"
 
-def _read_chunks(path: Path) -> List[Dict[str, Any]]:
-    chunks: List[Dict[str, Any]] = []
+def _read_chunks(path: Path) -> list[dict[str, Any]]:
+    chunks: list[dict[str, Any]] = []
     with path.open("r", encoding="utf-8") as f:
         for line in f:
             if line.strip():
@@ -28,8 +28,8 @@ def _read_chunks(path: Path) -> List[Dict[str, Any]]:
                 })
     return chunks
 
-def _coerce_vectors(vecs) -> List[List[float]]:
-    out: List[List[float]] = []
+def _coerce_vectors(vecs) -> list[list[float]]:
+    out: list[list[float]] = []
     for v in vecs:
         try:
             vv = v.tolist()  # numpy/onnxruntime style

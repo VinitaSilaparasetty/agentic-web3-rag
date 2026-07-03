@@ -1,6 +1,7 @@
 # File: models/schemas.py
 # Why: Stable API contracts keep the surface area predictable during alpha.
-from typing import Optional, List, Dict, Any
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -11,11 +12,11 @@ class QueryRequest(BaseModel):
 
 class QueryResponse(BaseModel):
     answer: str
-    sources: List[Dict[str, Any]]
+    sources: list[dict[str, Any]]
 
 
 class FeedbackRequest(BaseModel):
     query: str
     answer: str
     helpful: bool
-    notes: Optional[str] = None
+    notes: str | None = None

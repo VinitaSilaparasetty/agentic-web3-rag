@@ -19,20 +19,19 @@ from __future__ import annotations
 import csv
 import json
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any
 
-from config import AI_CRAWLERS, CLASSIFIED, SIGNALS_RAW
-
+from config import CLASSIFIED, SIGNALS_RAW
 
 # ── Classification rules ──────────────────────────────────────────────────────
 
-def _has_opt_out_robots(robots: Dict | None) -> bool:
+def _has_opt_out_robots(robots: dict | None) -> bool:
     if not robots:
         return False
     return bool(robots.get("blocks_all_crawlers") or robots.get("blocks_ai_crawlers"))
 
 
-def _has_opt_in_robots(robots: Dict | None) -> bool:
+def _has_opt_in_robots(robots: dict | None) -> bool:
     """llms.txt or a robots.txt explicitly *allowing* a recognised AI crawler."""
     if not robots:
         return False
@@ -40,15 +39,15 @@ def _has_opt_in_robots(robots: Dict | None) -> bool:
     return False
 
 
-def _keyword_opt_out(kw_dict: Dict) -> bool:
+def _keyword_opt_out(kw_dict: dict) -> bool:
     return bool(kw_dict.get("opt_out_keywords"))
 
 
-def _keyword_opt_in(kw_dict: Dict) -> bool:
+def _keyword_opt_in(kw_dict: dict) -> bool:
     return bool(kw_dict.get("opt_in_keywords"))
 
 
-def classify(sig: Dict[str, Any]) -> Tuple[str, str]:
+def classify(sig: dict[str, Any]) -> tuple[str, str]:
     """
     Returns (class_label, signal_type).
 
@@ -136,9 +135,9 @@ FIELDS = [
 
 def run(signals_path: str = SIGNALS_RAW, out_path: str = CLASSIFIED) -> None:
     signals = [
-        json.loads(l)
-        for l in Path(signals_path).read_text(encoding="utf-8").splitlines()
-        if l.strip()
+        json.loads(line)
+        for line in Path(signals_path).read_text(encoding="utf-8").splitlines()
+        if line.strip()
     ]
     print(f"[classifier] classifying {len(signals)} repos", flush=True)
 

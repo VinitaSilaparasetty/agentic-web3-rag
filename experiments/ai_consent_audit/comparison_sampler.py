@@ -11,18 +11,19 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 import time
 from pathlib import Path
 
 import requests
-
-from config import (
-    DATA_DIR, GITHUB_API_DELAY, GITHUB_SEARCH_DELAY,
-    MIN_PUSHED, MIN_STARS, REQUEST_TIMEOUT,
-)
-from github_sampler import _repo_record, _license_spdx, _classify_license_stratum
 import signal_scanner
+from config import (
+    DATA_DIR,
+    GITHUB_API_DELAY,
+    GITHUB_SEARCH_DELAY,
+    MIN_PUSHED,
+    MIN_STARS,
+)
+from github_sampler import _repo_record
 
 TOKEN = os.getenv("GITHUB_TOKEN", "")
 HEADERS = {

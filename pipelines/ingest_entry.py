@@ -5,15 +5,18 @@ Why:
 - Still enforce Phase-1 consent via pipelines.ingest.run_ingest (allowlist gate).
 """
 from __future__ import annotations
-from pathlib import Path
-from urllib.parse import urlparse
+
 import argparse
 import json
 import re
 import sys
+from pathlib import Path
+from urllib.parse import urlparse
+
 import yaml
 
 from pipelines.ingest import run_ingest  # expects list[dict]
+
 
 def _slug(s: str) -> str:
     s = s.strip().lower()

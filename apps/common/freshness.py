@@ -1,5 +1,9 @@
-import json, os, tempfile, time, urllib.parse
-from typing import Dict, Iterable, List, Tuple, Optional
+import json
+import os
+import tempfile
+import time
+import urllib.parse
+from collections.abc import Iterable
 
 REG_PATH = os.getenv("FRESHNESS_REG_PATH", "data/freshness.json")
 
@@ -15,16 +19,16 @@ def _atomic_write(path: str, data: str) -> None:
         tmp_path = tmp.name
     os.replace(tmp_path, path)
 
-def load() -> Dict[str, float]:
+def load() -> dict[str, float]:
     try:
-        with open(REG_PATH, "r") as f:
+        with open(REG_PATH) as f:
             return {k: float(v) for k, v in json.load(f).items()}
     except FileNotFoundError:
         return {}
     except Exception:
         return {}
 
-def save(reg: Dict[str, float]) -> None:
+def save(reg: dict[str, float]) -> None:
     _atomic_write(REG_PATH, json.dumps(reg, ensure_ascii=False, separators=(",", ":")))
 
 def domain_of(url_or_domain: str) -> str:
@@ -32,23 +36,23 @@ def domain_of(url_or_domain: str) -> str:
         return urllib.parse.urlparse(url_or_domain).netloc.lower()
     return url_or_domain.lower()
 
-def mark_seen(url_or_domain: str, ts: Optional[float] = None) -> None:
+def mark_seen(url_or_domain: str, ts: float | None = None) -> None:
     d = domain_of(url_or_domain)
     reg = load()
     reg[d] = float(ts or _now_ts())
     save(reg)
 
-def last_seen(url_or_domain: str) -> Optional[float]:
+def last_seen(url_or_domain: str) -> float | None:
     d = domain_of(url_or_domain)
     return load().get(d)
 
-def rank_domains(domains: Iterable[str]) -> List[Tuple[str, Optional[float]]]:
+def rank_domains(domains: Iterable[str]) -> list[tuple[str, float | None]]:
     """
     Return domains sorted by staleness (least recently seen first).
     Domains never seen appear first (None).
     """
     reg = load()
-    items: List[Tuple[str, Optional[float]]] = []
+    items: list[tuple[str, float | None]] = []
     seen = set()
     for raw in domains:
         d = domain_of(raw)

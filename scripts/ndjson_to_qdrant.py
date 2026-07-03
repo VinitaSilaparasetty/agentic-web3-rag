@@ -1,5 +1,8 @@
-import os, sys, json, uuid, hashlib
-from typing import List, Dict, Any
+import json
+import os
+import sys
+import uuid
+from typing import Any
 
 from qdrant_client import QdrantClient
 from qdrant_client import models as qm
@@ -17,7 +20,7 @@ def stable_id(url: str) -> str:
     # UUIDv5 (namespace URL) ensures a valid UUID string and reproducible ID
     return str(uuid.uuid5(uuid.NAMESPACE_URL, url))
 
-def  choose_text_for_embedding(rec: Dict[str, Any]) -> str:
+def  choose_text_for_embedding(rec: dict[str, Any]) -> str:
     # Respect policy: prefer full text if present, else snippet, else title
     if rec.get("text"):
         return rec["text"]

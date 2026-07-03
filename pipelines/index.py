@@ -8,14 +8,12 @@ from __future__ import annotations
 import json
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from qdrant_client import QdrantClient
-import json
-from pathlib import Path
-from qdrant_client.http.models import Distance, VectorParams, PointStruct
-from models.config import settings
+from qdrant_client.http.models import Distance, PointStruct, VectorParams
 
+from models.config import settings
 
 # ---- Paths / constants -------------------------------------------------------
 
@@ -27,7 +25,7 @@ QDRANT_URL = settings.qdrant_url
 
 # ---- IO helpers --------------------------------------------------------------
 
-def _load_embeddings(path: Path) -> Tuple[List[str], List[List[float]], int]:
+def _load_embeddings(path: Path) -> tuple[list[str], list[list[float]], int]:
     """
     Reads embeddings sidecar written by pipelines.embed:
       {
@@ -38,8 +36,8 @@ def _load_embeddings(path: Path) -> Tuple[List[str], List[List[float]], int]:
       }
     """
     blob = json.loads(path.read_text(encoding="utf-8"))
-    ids: List[str] = list(blob["ids"])
-    vecs: List[List[float]] = []
+    ids: list[str] = list(blob["ids"])
+    vecs: list[list[float]] = []
     for v in blob["vectors"]:
         # Robustly coerce numpy arrays / lists to plain list[float]
         try:
@@ -51,7 +49,7 @@ def _load_embeddings(path: Path) -> Tuple[List[str], List[List[float]], int]:
     return ids, vecs, dim
 
 
-def _load_chunks_by_id(path: Path) -> Dict[str, Dict[str, Any]]:
+def _load_chunks_by_id(path: Path) -> dict[str, dict[str, Any]]:
     """
     Reads chunks.jsonl into a dict keyed by its 'id'.
     """
@@ -59,7 +57,7 @@ def _load_chunks_by_id(path: Path) -> Dict[str, Dict[str, Any]]:
         raise FileNotFoundError(
             "No chunks found; run `python -m pipelines.preprocess` first."
         )
-    out: Dict[str, Dict[str, Any]] = {}
+    out: dict[str, dict[str, Any]] = {}
     with path.open("r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -100,7 +98,7 @@ def _to_point_id(raw_id: str) -> str:
     return str(uuid.uuid5(uuid.NAMESPACE_URL, f"web3rag:{s}"))
 
 
-def _lookup_chunk(by_id: Dict[str, Dict[str, Any]], eid: str) -> Dict[str, Any] | None:
+def _lookup_chunk(by_id: dict[str, dict[str, Any]], eid: str) -> dict[str, Any] | None:
     """
     Try to find the chunk record by exact id; if not present, retry by stripping hyphens.
     """
@@ -124,13 +122,13 @@ def main() -> None:
     client = QdrantClient(url=QDRANT_URL)
     _ensure_collection(client, COLL, dim)
 
-    points: List[PointStruct] = []
+    points: list[PointStruct] = []
     for i, eid in enumerate(ids):
         vec = vectors[i]
         pid = _to_point_id(eid)
         ch = _lookup_chunk(by_chunk_id, eid)
 
-        payload: Dict[str, Any] = {"uid": eid}
+        payload: dict[str, Any] = {"uid": eid}
         if ch:
             # Carry full payload fields from chunks.jsonl
             payload.update({

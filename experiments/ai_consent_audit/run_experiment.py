@@ -13,7 +13,7 @@ from __future__ import annotations
 import sys
 import time
 
-from config import CLASSIFIED, REPOS_RAW, SIGNALS_RAW, TARGET_SAMPLE, PILOT_SAMPLE
+from config import CLASSIFIED, PILOT_SAMPLE, REPOS_RAW, SIGNALS_RAW, TARGET_SAMPLE
 
 
 def main() -> None:
@@ -58,8 +58,8 @@ def main() -> None:
     total = time.time() - t0
     print(f"\n{'='*60}", flush=True)
     print(f"  Experiment complete in {total/60:.1f} minutes", flush=True)
-    print(f"  Results  : experiments/ai_consent_audit/data/analysis_results.json", flush=True)
-    print(f"  Figures  : experiments/ai_consent_audit/data/figures/", flush=True)
+    print("  Results  : experiments/ai_consent_audit/data/analysis_results.json", flush=True)
+    print("  Figures  : experiments/ai_consent_audit/data/figures/", flush=True)
     print(f"  Raw data : {CLASSIFIED}", flush=True)
     print(f"{'='*60}\n", flush=True)
 

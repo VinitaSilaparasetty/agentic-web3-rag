@@ -11,7 +11,6 @@ Output: data/paper.md  (submit to ICAIL / AI&Society / Computer Law & Security R
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 
 from config import ANALYSIS_OUT, DATA_DIR
@@ -25,14 +24,13 @@ def generate(results: dict) -> str:
     r1 = results["rq1_prevalence"]
     r2 = results["rq2_direction"]
     r3 = results["rq3_predictors"]
-    r4 = results["rq4_temporal"]
     n = r1["n_total"]
     ci = r1["wilson_ci_any_signal_95"]
     by_lic = r3["prevalence_by_license_stratum"]
     by_stars = r3["prevalence_by_stars_quartile"]
     mechs = r2.get("signal_mechanism_counts", {})
     generated_at = results["metadata"]["generated_at"][:10]
-    now_year = datetime.now(timezone.utc).year
+    TARGET_SAMPLE_PLACEHOLDER = 1000
 
     def pct(key: str, src: dict = r1) -> str:
         return f"{src[key]:.1f}\\%"
@@ -67,6 +65,26 @@ def generate(results: dict) -> str:
     total_sig = r2.get("n_with_signal", 1) or 1
     for m, c in sorted(mechs.items(), key=lambda x: -x[1]):
         mech_rows += f"| {m} | {c} | {100*c/total_sig:.1f} |\n"
+
+    # Pre-compute expressions that contain backslashes (invalid inside f-string {} on Python 3.11)
+    mech_rows_or_empty = mech_rows if mech_rows else "| (no signals detected) | 0 | 0 |\n"
+    lic_rows_or_empty = lic_rows if lic_rows else "| (insufficient data) | — | — | — | — |\n"
+    stars_rows_or_empty = stars_rows if stars_rows else "| (insufficient data) | — | — | — |\n"
+    if r1["pct_any_signal"] < 10:
+        h1_result = "H1 is **confirmed**: signal prevalence is below 10%."
+    else:
+        h1_result = (
+            f"H1 is **not confirmed**: signal prevalence ({r1['pct_any_signal']:.1f}%)"
+            " exceeds the 10% threshold."
+        )
+    if by_lic.get("copyleft", {}).get("pct", 0) > by_lic.get("permissive", {}).get("pct", 0):
+        h2_result = "H2 is **confirmed**: copyleft repos exhibit higher signal prevalence than permissive-licence repos."
+    else:
+        h2_result = "H2 is **not confirmed**: copyleft repos do not exhibit significantly higher signal prevalence than permissive-licence repos."
+    if r3.get("logistic_regression"):
+        appendix_a = "```json\n" + json.dumps(r3.get("logistic_regression"), indent=2) + "\n```"
+    else:
+        appendix_a = "*scikit-learn not available during generation; see analysis\\_results.json.*"
 
     paper = f"""---
 title: >
@@ -233,13 +251,13 @@ For each repository we collected (all data public):
 
 1. **Repository metadata** via GitHub API: name, stars, license SPDX, created/pushed timestamps,
    homepage URL, language, topics.
-2. **robots.txt** at `raw.githubusercontent.com/{owner}/{repo}/HEAD/robots.txt`
+2. **robots.txt** at `raw.githubusercontent.com/{{owner}}/{{repo}}/HEAD/robots.txt`
    (in-repository placement, uncommon but possible).
 3. **README.md** content via GitHub API, decoded from base64.
 4. **LICENSE** file content (candidates: LICENSE, LICENSE.md, LICENSE.txt, COPYING).
 5. **Homepage signals** (for repos with a non-empty `homepage` field):
-   - `{homepage}/robots.txt` — parsed for AI-crawler-specific rules
-   - `{homepage}/llms.txt` — presence/content
+   - `{{homepage}}/robots.txt` — parsed for AI-crawler-specific rules
+   - `{{homepage}}/llms.txt` — presence/content
    - HTTP response headers from the homepage URL: `X-Robots-Tag`, `tdm-reservation`,
      and auxiliary headers
 6. All external HTTP requests were made with `User-Agent: web3-rag-research-bot/1.0
@@ -310,8 +328,7 @@ Table 1 shows the class distribution.
 | NONE | {r1['n_none']} | {r1['pct_none']:.1f}\\% | — |
 | **Any signal** | **{r1['n_any_signal']}** | **{r1['pct_any_signal']:.1f}\\%** | **{fmt_ci(*ci)}** |
 
-{"H1 is **confirmed**: signal prevalence is below 10\\%." if r1['pct_any_signal'] < 10 else
- f"H1 is **not confirmed**: signal prevalence ({r1['pct_any_signal']:.1f}\\%) exceeds the 10\\% threshold."}
+{h1_result}
 
 ## 4.2 RQ2 — Signal Direction
 
@@ -324,7 +341,7 @@ signal-present repos) are classified OPT\\_OUT, vs. {r2.get('n_opt_in', 0)} repo
 
 | Mechanism | Count | % of signal-present repos |
 |-----------|-------|--------------------------|
-{mech_rows if mech_rows else "| (no signals detected) | 0 | 0 |\n"}
+{mech_rows_or_empty}
 
 ## 4.3 RQ3 — Predictors of Signal Presence
 
@@ -332,16 +349,15 @@ signal-present repos) are classified OPT\\_OUT, vs. {r2.get('n_opt_in', 0)} repo
 
 | License stratum | n | Signal-present | % | 95\\% Wilson CI |
 |-----------------|---|---------------|---|----------------|
-{lic_rows if lic_rows else "| (insufficient data) | — | — | — | — |\n"}
+{lic_rows_or_empty}
 
-{"H2 is **confirmed**: copyleft repos exhibit higher signal prevalence than permissive-licence repos." if by_lic.get("copyleft", {}).get("pct", 0) > by_lic.get("permissive", {}).get("pct", 0) else
- "H2 is **not confirmed**: copyleft repos do not exhibit significantly higher signal prevalence than permissive-licence repos."}
+{h2_result}
 
 **Table 4. Signal Prevalence by Stars Quartile**
 
 | Stars quartile | n | Signal-present | % |
 |---------------|---|---------------|---|
-{stars_rows if stars_rows else "| (insufficient data) | — | — | — |\n"}
+{stars_rows_or_empty}
 
 {'Logistic regression coefficients are reported in Appendix A.' if r3.get('logistic_regression') else 'Logistic regression requires scikit-learn; results available in analysis_results.json.'}
 
@@ -454,7 +470,7 @@ scanner code are released openly to enable such replication.
 
 # Appendix A — Logistic Regression Coefficients
 
-{'```json\\n' + json.dumps(r3.get('logistic_regression'), indent=2) + '\\n```' if r3.get('logistic_regression') else '*scikit-learn not available during generation; see analysis\\_results.json.*'}
+{appendix_a}
 
 Feature names: {r3.get('feature_names', [])}
 

@@ -6,16 +6,18 @@ Each chunk carries: id, text, project, url, source_id (file stem), plus passthro
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import re
+from collections.abc import Iterable
 from pathlib import Path
-import json, hashlib, re
-from typing import Dict, Iterable, Tuple
 
 PROCESSED_DIR = Path("data/processed")
 OUT_PATH      = Path("data/processed/chunks.jsonl")
 
 FRONT_RE = re.compile(r"^\s*---\s*\n(?P<json>\{.*?\})\s*\n---\s*\n?", re.S)
 
-def _parse_front_matter(raw: str) -> Tuple[Dict, str]:
+def _parse_front_matter(raw: str) -> tuple[dict, str]:
     """
     Front-matter is JSON wrapped between --- lines.
     Returns (meta, body). If none, meta={}, body=raw.

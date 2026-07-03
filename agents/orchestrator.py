@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Any, Dict, List
+from typing import Any
 
 from models.config import settings
 from tools.retrieval import search_dense
@@ -15,11 +15,11 @@ def _model():
     return TextEmbedding(model_name=MODEL_ID)
 
 
-async def run_agent(query: str, top_k: int = 5) -> Dict[str, Any]:
+async def run_agent(query: str, top_k: int = 5) -> dict[str, Any]:
     vectors = list(_model().embed([query]))
     vec = [float(x) for x in vectors[0]]
     hits = search_dense(settings.qdrant_alias_active, vec, top_k=top_k)
-    bullets: List[str] = []
+    bullets: list[str] = []
     for h in hits:
         p = h["payload"]
         src = p.get("url") or p.get("source", "")

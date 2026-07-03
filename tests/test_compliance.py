@@ -1,15 +1,13 @@
 """Tests for apps/common/compliance.py — display policy and snippet logic."""
-import pytest
-from unittest.mock import patch, MagicMock
-from apps.common.compliance import (
-    apply_display_policy,
-    trim_snippet,
-    _domain_for,
-    policy_for_url,
-    Policy,
-    DEFAULT_SNIPPET_CHARS,
-)
+from unittest.mock import patch
 
+from apps.common.compliance import (
+    DEFAULT_SNIPPET_CHARS,
+    _domain_for,
+    apply_display_policy,
+    policy_for_url,
+    trim_snippet,
+)
 
 # ── trim_snippet ──────────────────────────────────────────────────────────────
 

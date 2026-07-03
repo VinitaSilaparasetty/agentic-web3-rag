@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from qdrant_client import QdrantClient
+
 from models.config import settings
 
 _client = QdrantClient(url=settings.qdrant_url)
 
 
-def search_dense(collection: str, vector: List[float], top_k: int = 5) -> List[Dict[str, Any]]:
+def search_dense(collection: str, vector: list[float], top_k: int = 5) -> list[dict[str, Any]]:
     res = _client.query_points(
         collection_name=collection,
         query=vector,

@@ -1,6 +1,6 @@
 """Tests for apps/common/freshness.py — domain freshness registry."""
-import os
 import pytest
+
 from apps.common import freshness
 
 

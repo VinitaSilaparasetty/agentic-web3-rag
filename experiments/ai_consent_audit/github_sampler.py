@@ -11,22 +11,21 @@ import json
 import os
 import sys
 import time
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any
 
 import requests
-
 from config import (
-    AI_CRAWLERS,
     DATA_DIR,
     GITHUB_API_DELAY,
     GITHUB_SEARCH_DELAY,
     MIN_PUSHED,
     MIN_STARS,
+    PILOT_SAMPLE,
     REPOS_RAW,
     SEARCH_TOPICS,
     TARGET_SAMPLE,
-    PILOT_SAMPLE,
 )
 
 TOKEN = os.getenv("GITHUB_TOKEN", "")
@@ -37,7 +36,7 @@ HEADERS = {
 }
 
 
-def _get(url: str, params: Optional[Dict] = None) -> Dict[str, Any]:
+def _get(url: str, params: dict | None = None) -> dict[str, Any]:
     r = requests.get(url, headers=HEADERS, params=params, timeout=15)
     if r.status_code == 403 and "rate limit" in r.text.lower():
         reset = int(r.headers.get("X-RateLimit-Reset", time.time() + 60))
@@ -49,7 +48,7 @@ def _get(url: str, params: Optional[Dict] = None) -> Dict[str, Any]:
     return r.json()
 
 
-def _search_page(query: str, page: int) -> Dict[str, Any]:
+def _search_page(query: str, page: int) -> dict[str, Any]:
     time.sleep(GITHUB_SEARCH_DELAY)
     return _get(
         "https://api.github.com/search/repositories",
@@ -57,12 +56,12 @@ def _search_page(query: str, page: int) -> Dict[str, Any]:
     )
 
 
-def _license_spdx(repo: Dict) -> Optional[str]:
+def _license_spdx(repo: dict) -> str | None:
     lic = repo.get("license") or {}
     return (lic.get("spdx_id") or "").strip() or None
 
 
-def _classify_license_stratum(spdx: Optional[str]) -> str:
+def _classify_license_stratum(spdx: str | None) -> str:
     from config import LICENSE_STRATA
     if not spdx:
         return "no_license"
@@ -72,7 +71,7 @@ def _classify_license_stratum(spdx: Optional[str]) -> str:
     return "other"
 
 
-def _repo_record(repo: Dict) -> Dict[str, Any]:
+def _repo_record(repo: dict) -> dict[str, Any]:
     spdx = _license_spdx(repo)
     return {
         "repo_id": repo["id"],
@@ -111,7 +110,7 @@ def _existing_full_names(path: str) -> set[str]:
     return out
 
 
-def _iter_topic_repos(topic: str, max_per_topic: int = 300) -> Iterator[Dict[str, Any]]:
+def _iter_topic_repos(topic: str, max_per_topic: int = 300) -> Iterator[dict[str, Any]]:
     query = (
         f"topic:{topic} stars:>={MIN_STARS} pushed:>{MIN_PUSHED} "
         f"fork:false archived:false"
@@ -137,13 +136,13 @@ def _iter_topic_repos(topic: str, max_per_topic: int = 300) -> Iterator[Dict[str
         page += 1
 
 
-def sample(target: int = TARGET_SAMPLE, pilot: bool = False) -> List[Dict[str, Any]]:
+def sample(target: int = TARGET_SAMPLE, pilot: bool = False) -> list[dict[str, Any]]:
     n = PILOT_SAMPLE if pilot else target
     Path(DATA_DIR).mkdir(parents=True, exist_ok=True)
     existing = _existing_full_names(REPOS_RAW)
     print(f"[sampler] resuming — {len(existing)} repos already collected; target={n}", flush=True)
 
-    collected: List[Dict[str, Any]] = []
+    collected: list[dict[str, Any]] = []
     seen_ids: set[int] = set()
 
     # Load already-collected to respect dedup

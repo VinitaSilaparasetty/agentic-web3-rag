@@ -1,5 +1,8 @@
-import sys, json
-from apps.common.compliance import policy_for_url, robots_allowed, trim_snippet
+import json
+import sys
+
+from apps.common.compliance import policy_for_url, robots_allowed
+
 
 def main():
     url = sys.argv[1]

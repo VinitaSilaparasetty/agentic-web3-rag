@@ -1,10 +1,11 @@
 # File: policies/consent_registry.py
 # Why: Treat consent as a first-class artifact; fail-closed if missing.
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Dict, Any
-import yaml
+
+from dataclasses import dataclass
 from pathlib import Path
+
+import yaml
 
 
 @dataclass
@@ -25,7 +26,7 @@ class ConsentRegistry:
             # We fail-closed here to avoid accidental ingestion without explicit consent.
             raise FileNotFoundError("consents.yaml not found; Phase 1 requires explicit allowlist.")
         data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-        self._items: Dict[str, Consent] = {}
+        self._items: dict[str, Consent] = {}
         for c in data.get("consents", []):
             if c.get("status") != "approved":
                 continue

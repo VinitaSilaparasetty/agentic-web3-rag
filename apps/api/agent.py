@@ -1,5 +1,6 @@
 import os
-from typing import List, Dict, Any
+from typing import Any
+
 from openai import OpenAI
 
 DEFAULT_MODEL = os.getenv("ASSIST_MODEL", "gpt-4o-mini")
@@ -27,7 +28,7 @@ Return ONLY JSON with keys:
 Keep it concise and actionable.
 """
 
-def build_context(query: str, docs: List[Dict[str, Any]], max_chars: int = 14000) -> str:
+def build_context(query: str, docs: list[dict[str, Any]], max_chars: int = 14000) -> str:
     # Keep the most relevant docs first and trim total size
     buf = []
     used = 0
@@ -45,7 +46,7 @@ def build_context(query: str, docs: List[Dict[str, Any]], max_chars: int = 14000
         "Retrieved docs (ordered by relevance):\n" + "".join(buf)
     )
 
-def run_assistant(query: str, docs: List[Dict[str, Any]]) -> Dict[str, Any]:
+def run_assistant(query: str, docs: list[dict[str, Any]]) -> dict[str, Any]:
     context = build_context(query, docs)
     resp = client.chat.completions.create(
         model=DEFAULT_MODEL,

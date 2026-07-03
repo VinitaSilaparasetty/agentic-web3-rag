@@ -1,6 +1,12 @@
-import sys, json, requests, bs4
+import json
+import sys
+
+import bs4
+import requests
+
 from apps.common.compliance import policy_for_url, robots_allowed, trim_snippet
 from apps.common.freshness import mark_seen
+
 
 def fetch_title_and_text(url):
     r = requests.get(url, timeout=20)

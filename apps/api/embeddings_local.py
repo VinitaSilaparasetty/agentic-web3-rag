@@ -1,5 +1,4 @@
 from functools import lru_cache
-from typing import List
 
 MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -10,6 +9,6 @@ def _model():
     return TextEmbedding(model_name=MODEL_ID)
 
 
-def embed_query(text: str) -> List[float]:
+def embed_query(text: str) -> list[float]:
     vectors = list(_model().embed([text]))
     return [float(x) for x in vectors[0]]

@@ -1,7 +1,9 @@
 # File: scripts/purge.py
 # Why: Fast removal reassures partners; alpha keeps it simple (by domain).
 from __future__ import annotations
-import argparse, pathlib, shutil
+
+import argparse
+import pathlib
 
 
 def main():
