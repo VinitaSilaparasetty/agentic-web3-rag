@@ -420,7 +420,7 @@ def run(classified_path: str = CLASSIFIED, out_path: str = ANALYSIS_OUT) -> dict
         "metadata": {
             "n": len(rows),
             "generated_at": datetime.now(UTC).isoformat(),
-            "source": classified_path,
+            "source": Path(classified_path).name,
         },
         "rq1_prevalence": rq1_prevalence(rows),
         "rq2_direction": rq2_direction(rows),
