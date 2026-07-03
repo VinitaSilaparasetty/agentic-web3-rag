@@ -1,0 +1,336 @@
+{
+  "metadata": {
+    "n": 200,
+    "generated_at": "2026-07-03T07:04:12.188328+00:00",
+    "source": "experiments/ai_consent_audit/data/classified.csv"
+  },
+  "rq1_prevalence": {
+    "n_total": 200,
+    "n_opt_in": 54,
+    "n_opt_out": 13,
+    "n_ambiguous": 1,
+    "n_none": 132,
+    "n_any_signal": 68,
+    "pct_any_signal": 34.0,
+    "pct_opt_in": 27.0,
+    "pct_opt_out": 6.5,
+    "pct_ambiguous": 0.5,
+    "pct_none": 66.0,
+    "wilson_ci_any_signal_95": [
+      27.79,
+      40.81
+    ],
+    "chi2_direction": 68.1471,
+    "chi2_direction_df": 2
+  },
+  "rq2_direction": {
+    "n_with_signal": 68,
+    "n_opt_in": 54,
+    "n_opt_out": 13,
+    "n_ambiguous": 1,
+    "pct_opt_in_of_signal": 79.41,
+    "pct_opt_out_of_signal": 19.12,
+    "pct_ambiguous_of_signal": 1.47,
+    "signal_mechanism_counts": {
+      "llms.txt": 56,
+      "robots.txt": 14
+    }
+  },
+  "rq3_predictors": {
+    "logistic_regression": {
+      "coefficients": [
+        0.02521541588282011,
+        1.516222193820748,
+        0.052181807726524636,
+        0.27278929185303535,
+        0.536637383292061,
+        0.1294944543235417
+      ],
+      "intercept": -1.1076349014732967,
+      "classes": [
+        0,
+        1
+      ]
+    },
+    "feature_names": [
+      "log1p_stars",
+      "has_homepage",
+      "age_years",
+      "is_permissive",
+      "is_copyleft",
+      "is_no_license"
+    ],
+    "prevalence_by_license_stratum": {
+      "permissive": {
+        "n": 105,
+        "n_with_signal": 35,
+        "pct": 33.33,
+        "wilson_ci_95": [
+          25.05,
+          42.8
+        ]
+      },
+      "copyleft": {
+        "n": 32,
+        "n_with_signal": 18,
+        "pct": 56.25,
+        "wilson_ci_95": [
+          39.33,
+          71.83
+        ]
+      },
+      "no_license": {
+        "n": 56,
+        "n_with_signal": 14,
+        "pct": 25.0,
+        "wilson_ci_95": [
+          15.52,
+          37.69
+        ]
+      },
+      "other": {
+        "n": 7,
+        "n_with_signal": 1,
+        "pct": 14.29,
+        "wilson_ci_95": [
+          2.57,
+          51.31
+        ]
+      }
+    },
+    "prevalence_by_stars_quartile": {
+      "low_stars": {
+        "n": 50,
+        "n_with_signal": 19,
+        "pct": 38.0
+      },
+      "mid_stars": {
+        "n": 100,
+        "n_with_signal": 27,
+        "pct": 27.0
+      },
+      "high_stars": {
+        "n": 50,
+        "n_with_signal": 22,
+        "pct": 44.0
+      }
+    },
+    "q25_stars": 1141,
+    "q75_stars": 3907
+  },
+  "rq4_temporal": {
+    "key_enforcement_dates": {
+      "euaia_entry_into_force": "2024-08-01",
+      "euaia_general_provisions": "2025-02-02",
+      "euaia_art50_applies": "2026-08-02"
+    },
+    "signal_prevalence_by_creation_quarter": {
+      "2013-Q4": {
+        "total": 2,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2015-Q2": {
+        "total": 2,
+        "with_signal": 1,
+        "pct": 50.0
+      },
+      "2015-Q3": {
+        "total": 3,
+        "with_signal": 2,
+        "pct": 66.67
+      },
+      "2015-Q4": {
+        "total": 2,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2016-Q1": {
+        "total": 3,
+        "with_signal": 1,
+        "pct": 33.33
+      },
+      "2016-Q2": {
+        "total": 4,
+        "with_signal": 3,
+        "pct": 75.0
+      },
+      "2016-Q3": {
+        "total": 6,
+        "with_signal": 1,
+        "pct": 16.67
+      },
+      "2016-Q4": {
+        "total": 2,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2017-Q1": {
+        "total": 2,
+        "with_signal": 1,
+        "pct": 50.0
+      },
+      "2017-Q2": {
+        "total": 5,
+        "with_signal": 4,
+        "pct": 80.0
+      },
+      "2017-Q3": {
+        "total": 11,
+        "with_signal": 3,
+        "pct": 27.27
+      },
+      "2017-Q4": {
+        "total": 12,
+        "with_signal": 2,
+        "pct": 16.67
+      },
+      "2018-Q1": {
+        "total": 9,
+        "with_signal": 5,
+        "pct": 55.56
+      },
+      "2018-Q2": {
+        "total": 10,
+        "with_signal": 5,
+        "pct": 50.0
+      },
+      "2018-Q3": {
+        "total": 8,
+        "with_signal": 2,
+        "pct": 25.0
+      },
+      "2018-Q4": {
+        "total": 7,
+        "with_signal": 1,
+        "pct": 14.29
+      },
+      "2019-Q1": {
+        "total": 3,
+        "with_signal": 2,
+        "pct": 66.67
+      },
+      "2019-Q2": {
+        "total": 7,
+        "with_signal": 1,
+        "pct": 14.29
+      },
+      "2019-Q3": {
+        "total": 3,
+        "with_signal": 1,
+        "pct": 33.33
+      },
+      "2019-Q4": {
+        "total": 3,
+        "with_signal": 2,
+        "pct": 66.67
+      },
+      "2020-Q1": {
+        "total": 8,
+        "with_signal": 3,
+        "pct": 37.5
+      },
+      "2020-Q2": {
+        "total": 3,
+        "with_signal": 1,
+        "pct": 33.33
+      },
+      "2020-Q3": {
+        "total": 2,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2020-Q4": {
+        "total": 2,
+        "with_signal": 1,
+        "pct": 50.0
+      },
+      "2021-Q1": {
+        "total": 5,
+        "with_signal": 2,
+        "pct": 40.0
+      },
+      "2021-Q2": {
+        "total": 4,
+        "with_signal": 2,
+        "pct": 50.0
+      },
+      "2021-Q3": {
+        "total": 10,
+        "with_signal": 5,
+        "pct": 50.0
+      },
+      "2021-Q4": {
+        "total": 13,
+        "with_signal": 5,
+        "pct": 38.46
+      },
+      "2022-Q1": {
+        "total": 8,
+        "with_signal": 2,
+        "pct": 25.0
+      },
+      "2022-Q2": {
+        "total": 6,
+        "with_signal": 1,
+        "pct": 16.67
+      },
+      "2022-Q3": {
+        "total": 12,
+        "with_signal": 3,
+        "pct": 25.0
+      },
+      "2022-Q4": {
+        "total": 6,
+        "with_signal": 2,
+        "pct": 33.33
+      },
+      "2023-Q1": {
+        "total": 1,
+        "with_signal": 1,
+        "pct": 100.0
+      },
+      "2023-Q2": {
+        "total": 4,
+        "with_signal": 1,
+        "pct": 25.0
+      },
+      "2023-Q3": {
+        "total": 3,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2023-Q4": {
+        "total": 2,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2024-Q1": {
+        "total": 1,
+        "with_signal": 1,
+        "pct": 100.0
+      },
+      "2024-Q2": {
+        "total": 2,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2025-Q1": {
+        "total": 2,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2025-Q3": {
+        "total": 1,
+        "with_signal": 0,
+        "pct": 0.0
+      },
+      "2025-Q4": {
+        "total": 1,
+        "with_signal": 1,
+        "pct": 100.0
+      }
+    },
+    "note": "Full temporal analysis (ITS with enforcement-date breakpoints) requires larger N to fit broken-stick regression. See paper appendix."
+  }
+}
