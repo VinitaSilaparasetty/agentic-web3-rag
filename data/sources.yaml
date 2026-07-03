@@ -13,7 +13,8 @@
 #     consent_proof: "https://github.com/VinitaSilaparasetty/agentic-web3-rag/issues/1"
 
 sources:
-  # pr-automation-agent — self-owned; Vinita Silaparasetty / Aevoxis Solutions
+  # ── pr-automation-agent ─────────────────────────────────────────────────────
+  # Self-owned by Vinita Silaparasetty / Aevoxis Solutions. AGPL-3.0.
   - kind: website
     id: pr-automation-agent-readme
     project: pr-automation-agent
@@ -27,3 +28,45 @@ sources:
     url: https://github.com/VinitaSilaparasetty/pr-automation-agent/blob/main/CHANGELOG.md
     license: AGPL-3.0
     consent_proof: "https://github.com/VinitaSilaparasetty/pr-automation-agent/blob/main/LICENSE"
+
+  # ── spec-drift_chronometer ──────────────────────────────────────────────────
+  # AI governance / spec-drift detection platform. Self-owned. AGPL-3.0.
+  - kind: website
+    id: spec-drift-chronometer-readme
+    project: spec-drift_chronometer
+    url: https://github.com/VinitaSilaparasetty/spec-drift_chronometer
+    license: AGPL-3.0
+    consent_proof: "https://github.com/VinitaSilaparasetty/spec-drift_chronometer/blob/main/LICENSE"
+
+  - kind: website
+    id: spec-drift-chronometer-wiki
+    project: spec-drift_chronometer
+    url: https://github.com/VinitaSilaparasetty/spec-drift_chronometer/blob/main/README.md
+    license: AGPL-3.0
+    consent_proof: "https://github.com/VinitaSilaparasetty/spec-drift_chronometer/blob/main/LICENSE"
+
+  # ── agentic-web3-rag (this project) ─────────────────────────────────────────
+  # Self-owned. AGPL-3.0. Index the project docs so users can search them.
+  - kind: website
+    id: agentic-web3-rag-readme
+    project: agentic-web3-rag
+    url: https://github.com/VinitaSilaparasetty/agentic-web3-rag
+    license: AGPL-3.0
+    consent_proof: "https://github.com/VinitaSilaparasetty/agentic-web3-rag/blob/main/LICENSE"
+
+  - kind: website
+    id: agentic-web3-rag-consent
+    project: agentic-web3-rag
+    url: https://github.com/VinitaSilaparasetty/agentic-web3-rag/blob/main/CONSENT.md
+    license: AGPL-3.0
+    consent_proof: "https://github.com/VinitaSilaparasetty/agentic-web3-rag/blob/main/LICENSE"
+
+  # ── multi-agent-audit-poc ────────────────────────────────────────────────────
+  # EU AI Act compliance multi-agent system. Self-owned. No license file yet —
+  # treating as All Rights Reserved until license is added; self-consent applies.
+  - kind: website
+    id: multi-agent-audit-poc-readme
+    project: multi-agent-audit-poc
+    url: https://github.com/VinitaSilaparasetty/multi-agent-audit-poc
+    license: proprietary
+    consent_proof: "https://github.com/VinitaSilaparasetty"

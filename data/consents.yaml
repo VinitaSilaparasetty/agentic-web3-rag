@@ -16,19 +16,28 @@
 #       exclude_paths: []
 
 consents:
-  # Self-owned product — Vinita Silaparasetty / Aevoxis Solutions is both
-  # the rights holder and the operator of this RAG system. No external
-  # consent issue required; the LICENSE file is the proof of ownership.
+  # All repos under github.com/VinitaSilaparasetty — self-owned by Vinita Silaparasetty /
+  # Aevoxis Solutions. Rights holder and operator are the same person.
+  # Proof: copyright headers in LICENSE files across all listed repos.
   - status: approved
     domain: github.com
-    project: pr-automation-agent
+    project: aevoxis-oss
     license: AGPL-3.0
     display_policy: fulltext
-    proof: "https://github.com/VinitaSilaparasetty/pr-automation-agent/blob/main/LICENSE"
+    proof: "https://github.com/VinitaSilaparasetty"
     scope:
       include_paths:
-        - /VinitaSilaparasetty/pr-automation-agent
+        - /VinitaSilaparasetty/
       exclude_paths:
+        - /VinitaSilaparasetty/agentic-web3-rag/issues
+        - /VinitaSilaparasetty/agentic-web3-rag/pulls
+        - /VinitaSilaparasetty/agentic-web3-rag/actions
         - /VinitaSilaparasetty/pr-automation-agent/issues
         - /VinitaSilaparasetty/pr-automation-agent/pulls
         - /VinitaSilaparasetty/pr-automation-agent/actions
+        - /VinitaSilaparasetty/spec-drift_chronometer/issues
+        - /VinitaSilaparasetty/spec-drift_chronometer/pulls
+        - /VinitaSilaparasetty/spec-drift_chronometer/actions
+        - /VinitaSilaparasetty/multi-agent-audit-poc/issues
+        - /VinitaSilaparasetty/multi-agent-audit-poc/pulls
+        - /VinitaSilaparasetty/multi-agent-audit-poc/actions

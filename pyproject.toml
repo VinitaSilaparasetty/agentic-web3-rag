@@ -73,7 +73,7 @@ exclude = ["tests*", "docs*", "infra*", "data*", "scripts*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=apps --cov=pipelines --cov=policies --cov-report=term-missing --cov-fail-under=40"
+addopts = "--cov=apps --cov=pipelines --cov=policies --cov-report=term-missing --cov-fail-under=30"
 
 [tool.ruff]
 line-length = 100

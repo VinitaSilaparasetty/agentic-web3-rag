@@ -20,6 +20,12 @@ Ask natural-language questions about Ethereum, Solidity, Geth, and the broader W
 
 ---
 
+> **Index status — early access:** The search index is currently seeded with a small set of Aevoxis open-source projects. Search results will be sparse until more Web3 projects opt in. See [**Calling all Web3 open-source developers**](#calling-all-web3-open-source-developers) below if you want your project included.
+
+---
+
+---
+
 ## ✨ Features
 
 - **Semantic search** over Web3 docs using `fastembed` + Qdrant (no GPU required)
@@ -263,17 +269,37 @@ All settings are read from environment variables (or `.env`). Copy `.env.example
 
 ---
 
-## 🙋 Web3 Maintainers — Opt In
+## 📢 Calling all Web3 open-source developers
 
-If you maintain Web3 documentation and want it indexed, click the button below. It takes 2 minutes and you can revoke at any time.
+**The index is open and actively accepting projects.** If you build tools, protocols, or documentation in the Web3 space — wallets, L2s, DeFi primitives, smart contract frameworks, developer tooling — we want to make your docs searchable for developers worldwide.
+
+**What's in it for you:**
+
+- Your project appears in AI-assisted search results for Web3 developers
+- Full attribution — every result links back to your repo
+- You control your display policy: `link-only`, `snippet`, or `fulltext`
+- Free, revocable at any time — no commercial strings attached
+
+**What we need from you:** One GitHub issue. That's it.
 
 <div align="center">
 
-[![Opt in to indexing](https://img.shields.io/badge/Opt%20In%20to%20Indexing-%E2%9C%85%20Submit%20Consent-brightgreen?style=for-the-badge&logo=github)](https://github.com/VinitaSilaparasetty/agentic-web3-rag/issues/new?template=consent_to_index.md&title=Consent+to+Index%3A+%5Byour-project-name%5D)
+[![Apply to be indexed](https://img.shields.io/badge/Apply%20to%20be%20Indexed-%E2%9C%85%20Submit%20Consent-brightgreen?style=for-the-badge&logo=github)](https://github.com/VinitaSilaparasetty/agentic-web3-rag/issues/new?template=consent_to_index.md&title=Consent+to+Index%3A+%5Byour-project-name%5D)
 
 </div>
 
-By submitting the form you agree to the [Consent to Index terms](CONSENT.md). Your GitHub account identity and submission timestamp are recorded as the consent record. You can revoke at any time by commenting "REVOKE" on your issue or emailing info@aevoxis.de — all indexed content is removed within 48 hours.
+By submitting the form you agree to the [Consent to Index terms](CONSENT.md). Your GitHub account identity and submission timestamp are recorded as the consent record (legally admissible under eIDAS Art. 25(1)). You can revoke at any time by commenting "REVOKE" on your issue or emailing info@aevoxis.de — all indexed content is removed within 48 hours.
+
+**Currently indexed projects** (bootstrap set — Aevoxis OSS):
+
+| Project | Description | License |
+|---------|-------------|---------|
+| [pr-automation-agent](https://github.com/VinitaSilaparasetty/pr-automation-agent) | Automated PR review and labelling | AGPL-3.0 |
+| [spec-drift_chronometer](https://github.com/VinitaSilaparasetty/spec-drift_chronometer) | AI governance / spec-drift detection for Web3 | AGPL-3.0 |
+| [agentic-web3-rag](https://github.com/VinitaSilaparasetty/agentic-web3-rag) | This project — Web3 doc search | AGPL-3.0 |
+| [multi-agent-audit-poc](https://github.com/VinitaSilaparasetty/multi-agent-audit-poc) | Multi-agent EU AI Act compliance PoC | Proprietary |
+
+*Your project could be next.*
 
 ---
 
