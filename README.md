@@ -2,7 +2,7 @@
 
 # 🔍 agentic-web3-rag
 
-**Semantic search and AI-assisted answers over consent-gated Web3 documentation.**
+**Semantic search and AI-assisted answers over consent-first, licence-aware Web3 documentation.**
 
 [![PyPI version](https://img.shields.io/pypi/v/agentic-web3-rag?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/agentic-web3-rag/)
 [![Python](https://img.shields.io/pypi/pyversions/agentic-web3-rag?logo=python&logoColor=white)](https://pypi.org/project/agentic-web3-rag/)
@@ -12,7 +12,7 @@
 
 ---
 
-Ask natural-language questions about Ethereum, Solidity, Geth, and the broader Web3 ecosystem — get structured answers with cited sources, powered by a local embedding model and Qdrant vector search. Every source ingested requires explicit maintainer consent.
+Ask natural-language questions about Ethereum, Solidity, Geth, and the broader Web3 ecosystem — get structured answers with cited sources, powered by a local embedding model and Qdrant vector search. Content is only reused as far as the owner allows: through explicit opt-in, or within the limits of a source's published licence.
 
 [Installation](#installation) · [Quickstart](#quickstart) · [API Reference](#api-reference) · [Architecture](#architecture) · [Configuration](#configuration) · [Contributing](#contributing)
 
@@ -20,7 +20,7 @@ Ask natural-language questions about Ethereum, Solidity, Geth, and the broader W
 
 ---
 
-> **Index status — early access:** The search index is currently seeded with a small set of Aevoxis open-source projects. Search results will be sparse until more Web3 projects opt in. See [**Calling all Web3 open-source developers**](#calling-all-web3-open-source-developers) below if you want your project included.
+> **Index status — proof of concept:** To avoid indexing anyone's work without their say, the index is seeded only with (1) Aevoxis open-source projects, which I own, and (2) a small number of public docs handled strictly within their licence terms (see [Consent, Governance & Compliance](#-consent-governance--compliance)). Search results will be sparse until more projects opt in. See [**Calling all Web3 open-source developers**](#calling-all-web3-open-source-developers) below if you want your project included.
 
 ---
 
@@ -28,7 +28,7 @@ Ask natural-language questions about Ethereum, Solidity, Geth, and the broader W
 
 - **Semantic search** over Web3 docs using `fastembed` + Qdrant (no GPU required)
 - **AI-assisted answers** with structured output and cited sources
-- **Consent-first ingestion** — only indexes domains with explicit maintainer approval
+- **Consent-first ingestion** — full content is indexed only with explicit maintainer opt-in; other public docs are limited to what their licence allows
 - **Display policy enforcement** — respects license terms (link-only / snippet / fulltext) per domain
 - **FastAPI backend** with OpenAPI docs at `/docs`
 - **Next.js web UI** for interactive search
@@ -194,23 +194,25 @@ Dense vector search over indexed docs.
 | `offset`     | `int`    | `0`     | Pagination offset                        |
 
 ```bash
-curl "http://localhost:8080/search?q=how+do+I+call+eth_getBalance&k=3&project=geth"
+curl "http://localhost:8080/search?q=how+do+I+call+eth_getBalance&k=3&project=ethereum"
 ```
 
 ```json
 {
   "results": [
     {
-      "url": "https://geth.ethereum.org/docs/interacting-with-geth/rpc",
-      "title": "Rpc",
-      "snippet": "JSON-RPC Server — Interacting with Geth requires sending requests...",
+      "url": "https://ethereum.org/en/developers/docs/apis/json-rpc/",
+      "title": "JSON-RPC API",
+      "snippet": "JSON-RPC is a stateless, light-weight remote procedure call (RPC) protocol...",
       "score": 0.82,
-      "project": "geth",
-      "source": "geth.ethereum.org"
+      "project": "ethereum",
+      "source": "ethereum.org"
     }
   ]
 }
 ```
+
+> Snippets are only returned for sources whose display policy allows it. Sources marked `link-only` return the title and URL, with no text.
 
 ---
 
@@ -378,12 +380,21 @@ python -m pipelines.eval_retrieval
 
 ## 📜 Consent, Governance & Compliance
 
-This project operates on a **deny-by-default** consent model:
+This project uses two tiers, and nothing outside them is ingested:
 
-- Only domains listed as `approved` in `data/consents.yaml` are ever ingested
-- Each entry requires a `proof` link (GitHub issue, email, PR) from the maintainer
-- Display policy per domain is enforced at query time (`link-only` / `snippet` / `fulltext`)
-- Takedown requests are honoured within 48 hours — see [LEGAL.md](LEGAL.md)
+**1. Opt-in sources (deny by default)**
+- Listed as `approved` in `data/consents.yaml`, each with a `proof` link (GitHub issue, email, PR) from the maintainer
+- The maintainer chooses the display policy: `link-only`, `snippet` or `fulltext`
+- Currently this covers only Aevoxis projects, where the rights holder and operator are the same person
+
+**2. Licence-based public sources**
+- Listed in `configs/SOURCES.yaml` with their licence, attribution and display policy
+- Content is used only within the licence's terms. For example, ethereum.org (CC BY 4.0) is shown as attributed snippets, while geth.ethereum.org (all rights reserved) is `link-only`: title and URL, no text
+- `robots.txt`, `X-Robots-Tag: noai` and TDM reservations are respected, and maintainers can opt out at any time
+
+**For both tiers:**
+- Display policy is enforced at query time
+- Takedown and opt-out requests are honoured within 48 hours — see [LEGAL.md](LEGAL.md)
 - Full policy details in [GOVERNANCE.md](GOVERNANCE.md)
 
 ### EU compliance
@@ -392,7 +403,7 @@ This project operates on a **deny-by-default** consent model:
 |-----------|-------------------|
 | **GDPR** (2016/679) | [PRIVACY.md](PRIVACY.md) — privacy notice, data subject rights, retention policy, third-country transfer disclosure |
 | **EU AI Act** (2024/1689) Art. 50 | `/assist` responses carry `"ai_generated": true` and `X-AI-Generated: true` header; integrators must surface this to end users |
-| **DSM Copyright Directive** (2019/790) Art. 4 | Consent model is opt-**in** — exceeds the opt-out minimum; `robots.txt` + `X-Robots-Tag: noai` + TDM reservation headers respected |
+| **DSM Copyright Directive** (2019/790) Art. 4 | Full-content indexing is opt-**in**, which exceeds the opt-out minimum; licence-based sources are limited to their licence terms; `robots.txt` + `X-Robots-Tag: noai` + TDM reservation headers respected |
 | **eIDAS** (910/2014) Art. 25 | GitHub issue consent = Simple Electronic Signature; legally admissible as evidence — see [CONSENT.md §9](CONSENT.md) |
 | **DSA** (2022/2065) | Micro-enterprise exemption applies; no algorithmic content ranking or advertising |
 
@@ -414,6 +425,18 @@ under EU DSM Directive Art. 4 and EU AI Act Art. 53. Key findings:
 
 Dataset and scanner code released under CC0 / AGPL-3.0 in [`experiments/ai_consent_audit/`](experiments/ai_consent_audit/).
 To reproduce the classification and analysis from committed data, see [`experiments/ai_consent_audit/README.md`](experiments/ai_consent_audit/README.md).
+
+---
+
+## 🗺 Roadmap
+
+The next phase focuses on the Protocol Labs ecosystem, where documentation is spread across several projects that newer contributors have to navigate at once.
+
+- **Index the PL stack with each team's opt-in** — IPFS, Filecoin, libp2p and Storacha docs, so contributors get cited answers across the whole stack in one place
+- **Store and serve the index on IPFS/Filecoin** — making the tool native to the stack it covers
+- **Keep consent at the core** — every new project goes through the opt-in flow and chooses its own display policy
+
+If you maintain one of these projects and want it included, [submit a consent issue](https://github.com/VinitaSilaparasetty/agentic-web3-rag/issues/new?template=consent_to_index.md&title=Consent+to+Index%3A+%5Byour-project-name%5D).
 
 ---
 
